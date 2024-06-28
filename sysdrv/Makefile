@@ -603,6 +603,7 @@ else
 	cp $(SYSDRV_DIR)/tools/board/buildroot/profile_defconfig $(SYSDRV_DIR_OUT_ROOTFS)/etc/profile
 	cp $(SYSDRV_DIR)/tools/board/buildroot/iomux $(SYSDRV_DIR_OUT_ROOTFS)/usr/bin/
 	cp $(SYSDRV_DIR)/tools/board/buildroot/S99hciinit $(SYSDRV_DIR_OUT_ROOTFS)/etc/init.d/
+	cp $(SYSDRV_DIR)/tools/board/buildroot/S99rtcinit $(SYSDRV_DIR_OUT_ROOTFS)/etc/init.d/
 	cp $(SYSDRV_DIR)/tools/board/buildroot/S50sshd $(SYSDRV_DIR_OUT_ROOTFS)/etc/init.d/
 	cp $(SYSDRV_DIR)/tools/board/buildroot/S99python $(SYSDRV_DIR_OUT_ROOTFS)/etc/init.d/
 	cp $(SYSDRV_DIR)/tools/board/luckfox_config/S99luckfoxconfigload $(SYSDRV_DIR_OUT_ROOTFS)/etc/init.d/

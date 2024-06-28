@@ -1056,6 +1056,9 @@ function build_clean() {
 		make distclean -C ${SDK_APP_DIR}
 		rm -rf ${RK_PROJECT_OUTPUT_IMAGE} ${RK_PROJECT_OUTPUT}
 		rm -rf ${DTS_CONFIG} ${KERNEL_DEFCONFIG} ${BUILDROOT_DEFCONFIG}
+		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
+		rm -rf ${SDK_ROOT_DIR}/source/kernel/out
+		rm -rf ${BOARD_CONFIG}
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
@@ -2149,6 +2152,7 @@ function build_save() {
 	STUB_PATH="$(echo $STUB_PATH | tr '[:lower:]' '[:upper:]')"
 	export STUB_PATH=$SDK_ROOT_DIR/$STUB_PATH
 	export STUB_PATCH_PATH=$STUB_PATH/PATCHES
+	export STUB_PARENT_PATH="$SDK_ROOT_DIR"/IMAGE
 	STUB_DEBUG_FILES_PATH="$STUB_PATH/DEBUG_FILES"
 	mkdir -p $STUB_PATH $STUB_PATCH_PATH
 
@@ -2172,6 +2176,11 @@ function build_save() {
 	echo "BUILD-ID: $(hostname):$(whoami)" >>$STUB_PATH/build_info.txt
 	build_info >>$STUB_PATH/build_info.txt
 	echo "save to $STUB_PATH"
+
+	if [[ "$LF_TARGET_ROOTFS" == "ubuntu" ]]; then
+		sudo chmod 755 $STUB_PARENT_PATH
+	fi 
+
 	finish_build
 }
 
@@ -2341,4 +2350,3 @@ while [ $# -ne 0 ]; do
 done
 
 eval "${option:-build_allsave}"
-

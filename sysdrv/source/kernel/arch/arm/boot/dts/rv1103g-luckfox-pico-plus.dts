@@ -89,6 +89,3 @@
 &pwm1 {
 	status = "disabled";
 };
-
-
-

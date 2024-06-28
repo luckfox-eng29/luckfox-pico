@@ -107,10 +107,11 @@
 			reg = <0x0 0x0>;
 		};
 		linux,cma {
+			status = "disabled"
 			compatible = "shared-dma-pool";
 			inactive;
 			reusable;
-			size = <0xA00000>;
+			size = <0xA00000>; //10M
 			linux,cma-default;
 		};
 	};
@@ -279,8 +280,8 @@
 &i2c4 {
 	status = "okay";
 	clock-frequency = <400000>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&i2c4m2_xfer>;
+	//pinctrl-names = "default";
+	//pinctrl-0 = <&i2c4m2_xfer>;
 
 	sc3336: sc3336@30 {
 		compatible = "smartsens,sc3336";
@@ -472,6 +473,21 @@
 	status = "okay";
 };
 
+&i2c3 {
+    clock-frequency = <100000>;
+    GT911:touchscreen {
+		status = "disabled";
+		compatible = "goodix,gt911";
+		reg = <0x14>;
+
+		interrupt-parent = <&gpio0>;
+		interrupts = <RK_PA3 IRQ_TYPE_EDGE_FALLING>;
+
+		reset-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+    };
+};
+
 /**************************** PINCTRL ******************************/
 // SPI
 &spi0 {
@@ -492,12 +508,12 @@
 &i2c2 {
 	pinctrl-0 = <&i2c2m0_xfer>;
 };
-// &i2c3 {
-// 	pinctrl-0 = <&i2c3m0_xfer &i2c3m1_xfer &i2c3m2_xfer>;
-// };
-// &i2c4 {
-// 	pinctrl-0 = <&i2c4m0_xfer &i2c4m1_xfer &i2c4m2_xfer>;
-// };
+&i2c3 {
+	pinctrl-0 = <&i2c3m0_xfer &i2c3m1_xfer &i2c3m2_xfer &tp_rst &tp_irq>;
+};
+&i2c4 {
+	pinctrl-0 = <&i2c4m0_xfer &i2c4m1_xfer &i2c4m2_xfer>;
+};
 
 // UART
 &uart0 {
@@ -564,6 +580,16 @@
 		};
 		spi0m0_cs0: spi0m0-cs0 {
 			rockchip,pins = <1 RK_PC0 4 &pcfg_pull_none>;
+		};
+	};	
+	
+	touchscreen {
+		tp_rst:tp-rst {
+			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		
+		tp_irq:tp-irq {
+			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
