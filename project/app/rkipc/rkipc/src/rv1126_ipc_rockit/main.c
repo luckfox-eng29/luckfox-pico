@@ -4,8 +4,10 @@
 #include "common.h"
 #include "isp.h"
 #include "log.h"
+#include "network.h"
 #include "osd.h"
 #include "param.h"
+#include "rockiva.h"
 #include "server.h"
 #include "storage.h"
 #include "system.h"
@@ -19,7 +21,7 @@
 enum { LOG_ERROR, LOG_WARN, LOG_INFO, LOG_DEBUG };
 
 int enable_minilog = 0;
-int rkipc_log_level = LOG_DEBUG;
+int rkipc_log_level = LOG_INFO;
 
 static int g_main_run_ = 1;
 char *rkipc_ini_path_ = NULL;
@@ -82,8 +84,10 @@ void rkipc_get_opt(int argc, char *argv[]) {
 
 int main(int argc, char **argv) {
 	LOG_INFO("main begin\n");
+	rkipc_version_dump();
 	int camera_id;
 	signal(SIGINT, sig_proc);
+	signal(SIGTERM, sig_proc);
 
 	rkipc_get_opt(argc, argv);
 	LOG_INFO("rkipc_ini_path_ is %s, rkipc_iq_file_path_ is %s, rkipc_log_level "
@@ -92,15 +96,19 @@ int main(int argc, char **argv) {
 
 	// init
 	rk_param_init(rkipc_ini_path_);
+	rk_network_init(NULL);
 	rk_system_init();
+	if (rk_param_get_int("video.source:enable_npu", 0))
+		rkipc_rockiva_init();
 	camera_id = rk_param_get_int("video.0:camera_id", 0); // need rk_param_init
 	rk_isp_init(camera_id, rkipc_iq_file_path_);
-	// rk_isp_set_frame_rate(0, rk_param_get_int("isp.0.adjustment:fps", 30));
+	RK_MPI_SYS_Init();
 	rk_video_init();
 	if (rk_param_get_int("audio.0:enable", 0))
 		rkipc_audio_init();
 	rkipc_server_init();
 	rk_storage_init();
+	LOG_INFO("rkipc init finished.\n");
 
 	while (g_main_run_) {
 		usleep(1000 * 1000);
@@ -113,8 +121,13 @@ int main(int argc, char **argv) {
 	if (rk_param_get_int("audio.0:enable", 0))
 		rkipc_audio_deinit();
 	rk_video_deinit(); // RK_MPI_SYS_Exit
+	RK_MPI_SYS_Exit();
 	rk_isp_deinit(camera_id);
+	if (rk_param_get_int("video.source:enable_npu", 0))
+		rkipc_rockiva_deinit();
+	rk_network_deinit();
 	rk_param_deinit();
+	LOG_INFO("rkipc deinit finished.\n");
 
 	return 0;
 }

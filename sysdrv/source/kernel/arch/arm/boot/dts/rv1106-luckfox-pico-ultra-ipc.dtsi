@@ -5,8 +5,10 @@
  */
 #include "rv1106-amp.dtsi"
 #include "rv1106-evb.dtsi"
+#include "rv1106g3.dtsi"
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/display/media-bus-format.h>
+
 
 / {
 	chosen {
@@ -275,8 +277,8 @@
 &i2c4 {
 	status = "okay";
 	clock-frequency = <400000>;
-	//pinctrl-names = "default";
-	//pinctrl-0 = <&i2c4m2_xfer>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c4m2_xfer>;
 
 	sc3336: sc3336@30 {
 		compatible = "smartsens,sc3336";
@@ -505,9 +507,9 @@
 &i2c3 {
 	pinctrl-0 = <&i2c3m0_xfer &i2c3m1_xfer &i2c3m2_xfer &tp_rst &tp_irq>;
 };
-&i2c4 {
-	pinctrl-0 = <&i2c4m0_xfer &i2c4m1_xfer &i2c4m2_xfer>;
-};
+//&i2c4 {
+//	pinctrl-0 = <&i2c4m0_xfer &i2c4m1_xfer &i2c4m2_xfer>;
+//};
 
 // UART
 &uart0 {

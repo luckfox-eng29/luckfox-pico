@@ -1,0 +1,1 @@
+cmd_drivers/video/rockchip/rga3/rga3.ko := arm-rockchip830-linux-uclibcgnueabihf-ld -r -EL -z noexecstack --build-id=sha1  -T scripts/module.lds -o drivers/video/rockchip/rga3/rga3.ko drivers/video/rockchip/rga3/rga3.o drivers/video/rockchip/rga3/rga3.mod.o;  true

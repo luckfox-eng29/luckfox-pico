@@ -29,11 +29,10 @@ RKAIQ_BEGIN_DECLARE
 // #define M4_STRING_DESC(ALIAS, SIZE, RANGE, DEFAULT)
 // #define M4_ENUM_DESC(ALIAS, ENUM, DEFAULT)
 
-#include "rk_aiq_comm.h"
-
 #define AECV2_PIRIS_STEP_TABLE_MAX (1024)
 #define AECV2_MAX_GRIDWEIGHT_NUM (225)
 #define AECV2_MAX_HDRFRAME_NUM (3)
+#define AECV2_HDCIRIS_DOT_MAX_NUM (256)
 
 /*****************************************************************************/
 /**
@@ -69,6 +68,7 @@ typedef enum _CalibDb_FlickerFreqV2_e {
     AECV2_FLICKER_FREQUENCY_OFF   = 0,
     AECV2_FLICKER_FREQUENCY_50HZ = 1,
     AECV2_FLICKER_FREQUENCY_60HZ = 2,
+    AECV2_FLICKER_FREQUENCY_AUTO = 3,
 } CalibDb_FlickerFreqV2_t;
 
 typedef enum _CalibDb_AntiFlickerModeV2_e {
@@ -77,8 +77,9 @@ typedef enum _CalibDb_AntiFlickerModeV2_e {
 } CalibDb_AntiFlickerModeV2_t;
 
 typedef enum _CalibDb_IrisTypeV2_e {
-    IRISV2_DC_TYPE = 0,
-    IRISV2_P_TYPE = 1,
+    IRISV2_DC_TYPE  = 0,
+    IRISV2_P_TYPE   = 1,
+    IRISV2_HDC_TYPE = 2,
 } CalibDb_IrisTypeV2_t;
 
 typedef enum _CalibDb_DelayTypeV2_e {
@@ -169,8 +170,9 @@ typedef struct CalibDb_AeFrmRateAttrV2_s {
     // M4_BOOL_DESC("isFpsFix", "1")
     bool                    isFpsFix;
 
-    // M4_NUMBER_DESC("FpsValue", "f32", M4_RANGE(0,200), "0", M4_DIGIT(1),M4_HIDE(0))
+    // M4_NUMBER_DESC("FpsValue", "f32", M4_RANGE(0,1024), "0", M4_DIGIT(1),M4_HIDE(0))
     float                   FpsValue;
+
 } CalibDb_AeFrmRateAttrV2_t;
 
 typedef struct CalibDb_AntiFlickerAttrV2_s {
@@ -335,6 +337,9 @@ typedef struct CalibDb_LinExpInitExpV2_s {
 
     // M4_NUMBER_DESC("InitDCIrisDutyValue", "s32", M4_RANGE(0,100), "100", M4_DIGIT(0),M4_HIDE(0))
     int                     InitDCIrisDutyValue;
+
+    // M4_NUMBER_DESC("InitHDCIrisTargetValue", "s32", M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    int                     InitHDCIrisTargetValue;
 } CalibDb_LinExpInitExpV2_t;
 
 typedef struct CalibDb_LinAeRoute_AttrV2_s {
@@ -392,10 +397,10 @@ typedef struct CalibDb_AecBacklightV2_s {
     // M4_NUMBER_DESC("LumaDistTh", "f32", M4_RANGE(0,100), "10", M4_DIGIT(2),M4_HIDE(0))
     float                       LumaDistTh;//uint: %
 
-    // M4_NUMBER_DESC("LvLowTh", "f32", M4_RANGE(0,100), "7.5", M4_DIGIT(4),M4_HIDE(0))
+    // M4_NUMBER_DESC("LvLowTh", "f32", M4_RANGE(0,100), "0.3125", M4_DIGIT(4),M4_HIDE(0))
     float                       LvLowTh;
 
-    // M4_NUMBER_DESC("LvHighTh", "f32", M4_RANGE(0,100), "0.3125", M4_DIGIT(4),M4_HIDE(0))
+    // M4_NUMBER_DESC("LvHighTh", "f32", M4_RANGE(0,100), "7.5", M4_DIGIT(4),M4_HIDE(0))
     float                       LvHighTh;
 
     // M4_ARRAY_TABLE_DESC("BacklitSetPoint", "array_table_ui", M4_INDEX_DEFAULT)
@@ -486,6 +491,9 @@ typedef struct CalibDb_HdrExpInitExpV2_s {
 
     // M4_NUMBER_DESC("InitDCIrisDutyValue", "s32", M4_RANGE(0,100), "100", M4_DIGIT(0),M4_HIDE(0))
     int                     InitDCIrisDutyValue;
+
+    // M4_NUMBER_DESC("InitHDCIrisTargetValue", "s32", M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    int                     InitHDCIrisTargetValue;
 } CalibDb_HdrExpInitExpV2_t;
 
 typedef struct CalibDb_ExpRatioV2_s {
@@ -736,6 +744,9 @@ typedef struct CalibDb_MIris_AttrV2_s {
 
     // M4_NUMBER_DESC("DCIrisHoldValue", "s32", M4_RANGE(0,100), "50", M4_DIGIT(0),M4_HIDE(0))
     int                  DCIrisHoldValue;
+
+    // M4_NUMBER_DESC("HDCIrisTargetValue", "s32", M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    int                  HDCIrisTargetValue;
 } CalibDb_MIris_AttrV2_t;
 
 typedef struct CalibDb_PIris_AttrV2_s {
@@ -769,6 +780,41 @@ typedef struct CalibDb_DCIris_AttrV2_s {
     int         ClosePwmDuty;
 } CalibDb_DCIris_AttrV2_t;
 
+typedef struct CalibDb_HDCIris_AttrV2_s {
+    // M4_NUMBER_DESC("DampOver", "f32", M4_RANGE(0,1), "0.15", M4_DIGIT(2),M4_HIDE(0))
+    float       DampOver;
+
+    // M4_NUMBER_DESC("DampUnder", "f32", M4_RANGE(0,1), "0.45", M4_DIGIT(2),M4_HIDE(0))
+    float       DampUnder;
+
+    // M4_BOOL_DESC("ZeroIsMax", "0")
+    bool        ZeroIsMax;
+
+    // M4_NUMBER_DESC("MinTarget", "s32", M4_RANGE(0,1023), "0", M4_DIGIT(0),M4_HIDE(0))
+    int         MinTarget;
+
+    // M4_NUMBER_DESC("MaxTarget", "s32", M4_RANGE(0,1023), "1023", M4_DIGIT(0),M4_HIDE(0))
+    int         MaxTarget;
+
+    // M4_ARRAY_DESC("ZoomTargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
+    int         ZoomTargetDot[AECV2_HDCIRIS_DOT_MAX_NUM];
+
+    // M4_ARRAY_DESC("ZoomDot", "s32", M4_SIZE(1,256), M4_RANGE(-32768,32767), "0", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
+    int         ZoomDot[AECV2_HDCIRIS_DOT_MAX_NUM];
+
+    // M4_ARRAY_DESC("TargetDot", "s32", M4_SIZE(1,256), M4_RANGE(0,1023), "1023", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
+    int         IrisTargetDot[AECV2_HDCIRIS_DOT_MAX_NUM];
+
+    // M4_ARRAY_DESC("GainDot", "s32", M4_SIZE(1,256), M4_RANGE(1,512), "512", M4_DIGIT(0), M4_DYNAMIC(1),M4_HIDE(0))
+    int         GainDot[AECV2_HDCIRIS_DOT_MAX_NUM];
+
+    // M4_NUMBER_DESC("ZoomTargetDot_len", "s32", M4_RANGE(1,256), "12", M4_DIGIT(0),M4_HIDE(0))
+    int         ZoomTargetDot_len;
+
+    // M4_NUMBER_DESC("IrisTargetDot_len", "s32", M4_RANGE(1,256), "12", M4_DIGIT(0),M4_HIDE(0))
+    int         IrisTargetDot_len;
+} CalibDb_HDCIris_AttrV2_t;
+
 typedef struct CalibDb_AecIrisCtrlV2_s {
     // M4_BOOL_DESC("Enable", "0")
     bool                         Enable;
@@ -790,6 +836,9 @@ typedef struct CalibDb_AecIrisCtrlV2_s {
 
     // M4_STRUCT_DESC("DCIrisAttr", "normal_ui_style")
     CalibDb_DCIris_AttrV2_t      DCIrisAttr;
+
+    // M4_STRUCT_DESC("HDCIrisAttr", "normal_ui_style")
+    CalibDb_HDCIris_AttrV2_t     HDCIrisAttr;
 } CalibDb_AecIrisCtrlV2_t;
 
 /*****************************************************************************/

@@ -6,8 +6,8 @@
 extern "C" {
 #endif
 
-#include <../lvgl.h>
 #include <stdio.h>
+#include <../lvgl.h>
 
 void lv_test_init(void);
 void lv_test_deinit(void);
@@ -17,3 +17,4 @@ void lv_test_deinit(void);
 #endif
 
 #endif /*LV_TEST_INIT_H*/
+

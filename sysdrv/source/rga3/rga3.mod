@@ -1,0 +1,2 @@
+drivers/video/rockchip/rga3/rga_drv.o drivers/video/rockchip/rga3/rga_common.o drivers/video/rockchip/rga3/rga3_reg_info.o drivers/video/rockchip/rga3/rga_iommu.o drivers/video/rockchip/rga3/rga_dma_buf.o drivers/video/rockchip/rga3/rga_job.o drivers/video/rockchip/rga3/rga_hw_config.o drivers/video/rockchip/rga3/rga2_reg_info.o drivers/video/rockchip/rga3/rga_policy.o drivers/video/rockchip/rga3/rga_mm.o drivers/video/rockchip/rga3/rga_fence.o drivers/video/rockchip/rga3/rga_debugger.o
+

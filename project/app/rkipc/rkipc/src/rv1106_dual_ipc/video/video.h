@@ -8,13 +8,14 @@
 #include "rockiva.h"
 #include "roi.h"
 #include "rtmp.h"
-#include "rtsp_demo.h"
+#include "rtsp.h"
 #include "storage.h"
 
 #include <rga/im2d.h>
 #include <rga/rga.h>
 #include <rk_comm_tde.h>
 #include <rk_debug.h>
+#include <rk_mpi_avs.h>
 #include <rk_mpi_cal.h>
 #include <rk_mpi_ivs.h>
 #include <rk_mpi_mb.h>
