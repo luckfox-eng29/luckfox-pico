@@ -1,0 +1,10 @@
+prefix=/home/cro/Sdk/luckfox-pico/sysdrv/tools/board/eudev/out
+exec_prefix=/home/cro/Sdk/luckfox-pico/sysdrv/tools/board/eudev/out
+libdir=/home/cro/Sdk/luckfox-pico/sysdrv/tools/board/eudev/out/lib
+includedir=/home/cro/Sdk/luckfox-pico/sysdrv/tools/board/eudev/out/include
+
+Name: blkid
+Description: Block device id library
+Version: 2.37.2
+Cflags: -I${includedir}/blkid
+Libs: -L${libdir} -lblkid

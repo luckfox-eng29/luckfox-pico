@@ -1,0 +1,72 @@
+agetty:  
+blkdiscard:  librt 
+blkzone:  
+blockdev:  
+cal:  libtinfo 
+chcpu:  
+chfn:  libpam libpam_misc libpthread libreadline libuser 
+chmem:  
+choom:  
+chrt:  
+chsh:  libpam libpam_misc libpthread libreadline libuser 
+col:  
+colcrt:  
+colrm:  
+ctrlaltdel:  
+dmesg:  librt libtinfo 
+fallocate:  
+flock:  librt 
+fsck.cramfs:  libz 
+fsck.minix:  
+fsfreeze:  
+getopt:  
+hardlink:  libpcre2-posix librt 
+hexdump:  libtinfo 
+hwclock:  libm librt 
+ionice:  
+ipcmk:  
+ipcrm:  
+ipcs:  
+isosize:  
+kill:  
+last:  librt 
+ldattach:  
+logger:  libsystemd 
+login:  libpam libpam_misc 
+look:  
+mcookie:  
+mesg:  
+mkfs:  
+mkfs.bfs:  
+mkfs.cramfs:  libz 
+mkfs.minix:  
+mkswap:  
+more:  libtinfo 
+namei:  
+nologin:  
+nsenter:  
+pivot_root:  
+raw:  
+readprofile:  
+rename:  
+renice:  
+rev:  
+rtcwake:  
+runuser:  libpam libpam_misc librt libutil 
+script:  librt libutil 
+scriptlive:  librt libutil 
+scriptreplay:  
+setarch:  
+setpriv:  libcap-ng 
+setsid:  
+setterm:  libtinfo 
+su:  libpam libpam_misc librt libutil 
+sulogin:  libcrypt 
+switch_root:  
+taskset:  
+uclampset:  
+ul:  libtinfo 
+unshare:  
+utmpdump:  
+wall:  
+whereis:  

@@ -1,0 +1,352 @@
+gdbarch.o: gdbarch.c defs.h ../gdbsupport/common-defs.h \
+ ../gdbsupport/config.h ../gnulib/config.h ../gnulib/import/stdio.h \
+ ../gnulib/import/stdlib.h ../gnulib/import/stdint.h \
+ ../gnulib/import/string.h ../include/ansidecl.h ../include/libiberty.h \
+ ../include/ansidecl.h ../gnulib/import/pathmax.h \
+ ../gnulib/import/unistd.h ../include/gdb/signals.h \
+ ../include/gdb/signals.def ../gdbsupport/gdb_locale.h \
+ ../gnulib/import/locale.h ../gdbsupport/ptid.h \
+ ../gdbsupport/common-types.h ../gdbsupport/common-utils.h \
+ ../gdbsupport/poison.h ../gdbsupport/traits.h ../include/obstack.h \
+ ../gdbsupport/gdb_string_view.h ../gdbsupport/gdb_assert.h \
+ ../gdbsupport/errors.h ../gdbsupport/gdb_string_view.tcc \
+ ../gdbsupport/print-utils.h ../gdbsupport/common-debug.h \
+ ../gdbsupport/cleanups.h ../gdbsupport/common-exceptions.h \
+ ../gdbsupport/poison.h ../gdbsupport/gdb_unique_ptr.h config.h \
+ ../bfd/bfd.h ../include/symcat.h ../bfd/bfd_stdint.h \
+ ../include/diagnostics.h ../gnulib/import/sys/stat.h \
+ ../gnulib/import/fcntl.h gdb_wchar.h ../gnulib/import/wctype.h ui-file.h \
+ ui-style.h ../gdbsupport/host-defs.h ../gdbsupport/enum-flags.h \
+ ../include/hashtab.h nm.h ../include/fopen-bin.h utils.h exceptions.h \
+ ui-out.h ../gdbsupport/array-view.h ../gdbsupport/scoped_restore.h \
+ arch-utils.h gdbarch.h frame.h language.h symtab.h \
+ ../gdbsupport/gdb_vecs.h gdbtypes.h ../gdbsupport/gdb_optional.h \
+ ../gdbsupport/traits.h ../gdbsupport/offset-type.h \
+ ../gdbsupport/underlying.h ../gdbsupport/print-utils.h \
+ ../include/dwarf2.h ../include/dwarf2.def gdb_obstack.h gdb_regex.h \
+ ../gdbsupport/function-view.h ../gdbsupport/gdb_string_view.h \
+ ../gdbsupport/next-iterator.h completer.h command.h gdb-demangle.h \
+ minsyms.h expression.h std-operator.def ada-operator.def \
+ fortran-operator.def cli/cli-option.h completer.h command.h \
+ unwind_stop_reasons.def ../include/dis-asm.h infrun.h \
+ ../gdbsupport/byte-vector.h ../gdbsupport/def-vector.h \
+ ../gdbsupport/default-init-alloc.h osabi.h regcache.h \
+ ../gdbsupport/common-regcache.h gdbcmd.h cli/cli-script.h inferior.h \
+ breakpoint.h value.h extension.h mi/mi-cmds.h \
+ ../gdbsupport/gdb_ref_ptr.h ax.h ../gdbsupport/ax.def \
+ ../gdbsupport/break-common.h probe.h location.h target.h \
+ ../gdbsupport/refcounted-object.h target/target.h target/waitstatus.h \
+ ../gdbsupport/gdb_signals.h target/resume.h target/wait.h \
+ target/waitstatus.h memattr.h btrace.h ../gdbsupport/btrace-common.h \
+ record.h disasm.h tracepoint.h memrange.h ../gdbsupport/environ.h \
+ progspace.h gdb_bfd.h registry.h ../gdbsupport/safe-iterator.h \
+ symfile-add-flags.h ../gdbsupport/forward-scope-exit.h \
+ ../gdbsupport/scope-exit.h ../gdbsupport/preprocessor.h \
+ ../gdbsupport/common-inferior.h gdbthread.h cli/cli-utils.h \
+ ../gdbsupport/common-gdbthread.h thread-iter.h \
+ ../gdbsupport/filtered-iterator.h process-stratum-target.h \
+ inferior-iter.h ../include/floatformat.h reggroups.h observable.h \
+ ../gdbsupport/observable.h objfiles.h objfile-flags.h symfile.h \
+ psymtab.h bcache.h jit.h auxv.h frame-unwind.h dummy-frame.h
+
+defs.h:
+
+../gdbsupport/common-defs.h:
+
+../gdbsupport/config.h:
+
+../gnulib/config.h:
+
+../gnulib/import/stdio.h:
+
+../gnulib/import/stdlib.h:
+
+../gnulib/import/stdint.h:
+
+../gnulib/import/string.h:
+
+../include/ansidecl.h:
+
+../include/libiberty.h:
+
+../include/ansidecl.h:
+
+../gnulib/import/pathmax.h:
+
+../gnulib/import/unistd.h:
+
+../include/gdb/signals.h:
+
+../include/gdb/signals.def:
+
+../gdbsupport/gdb_locale.h:
+
+../gnulib/import/locale.h:
+
+../gdbsupport/ptid.h:
+
+../gdbsupport/common-types.h:
+
+../gdbsupport/common-utils.h:
+
+../gdbsupport/poison.h:
+
+../gdbsupport/traits.h:
+
+../include/obstack.h:
+
+../gdbsupport/gdb_string_view.h:
+
+../gdbsupport/gdb_assert.h:
+
+../gdbsupport/errors.h:
+
+../gdbsupport/gdb_string_view.tcc:
+
+../gdbsupport/print-utils.h:
+
+../gdbsupport/common-debug.h:
+
+../gdbsupport/cleanups.h:
+
+../gdbsupport/common-exceptions.h:
+
+../gdbsupport/poison.h:
+
+../gdbsupport/gdb_unique_ptr.h:
+
+config.h:
+
+../bfd/bfd.h:
+
+../include/symcat.h:
+
+../bfd/bfd_stdint.h:
+
+../include/diagnostics.h:
+
+../gnulib/import/sys/stat.h:
+
+../gnulib/import/fcntl.h:
+
+gdb_wchar.h:
+
+../gnulib/import/wctype.h:
+
+ui-file.h:
+
+ui-style.h:
+
+../gdbsupport/host-defs.h:
+
+../gdbsupport/enum-flags.h:
+
+../include/hashtab.h:
+
+nm.h:
+
+../include/fopen-bin.h:
+
+utils.h:
+
+exceptions.h:
+
+ui-out.h:
+
+../gdbsupport/array-view.h:
+
+../gdbsupport/scoped_restore.h:
+
+arch-utils.h:
+
+gdbarch.h:
+
+frame.h:
+
+language.h:
+
+symtab.h:
+
+../gdbsupport/gdb_vecs.h:
+
+gdbtypes.h:
+
+../gdbsupport/gdb_optional.h:
+
+../gdbsupport/traits.h:
+
+../gdbsupport/offset-type.h:
+
+../gdbsupport/underlying.h:
+
+../gdbsupport/print-utils.h:
+
+../include/dwarf2.h:
+
+../include/dwarf2.def:
+
+gdb_obstack.h:
+
+gdb_regex.h:
+
+../gdbsupport/function-view.h:
+
+../gdbsupport/gdb_string_view.h:
+
+../gdbsupport/next-iterator.h:
+
+completer.h:
+
+command.h:
+
+gdb-demangle.h:
+
+minsyms.h:
+
+expression.h:
+
+std-operator.def:
+
+ada-operator.def:
+
+fortran-operator.def:
+
+cli/cli-option.h:
+
+completer.h:
+
+command.h:
+
+unwind_stop_reasons.def:
+
+../include/dis-asm.h:
+
+infrun.h:
+
+../gdbsupport/byte-vector.h:
+
+../gdbsupport/def-vector.h:
+
+../gdbsupport/default-init-alloc.h:
+
+osabi.h:
+
+regcache.h:
+
+../gdbsupport/common-regcache.h:
+
+gdbcmd.h:
+
+cli/cli-script.h:
+
+inferior.h:
+
+breakpoint.h:
+
+value.h:
+
+extension.h:
+
+mi/mi-cmds.h:
+
+../gdbsupport/gdb_ref_ptr.h:
+
+ax.h:
+
+../gdbsupport/ax.def:
+
+../gdbsupport/break-common.h:
+
+probe.h:
+
+location.h:
+
+target.h:
+
+../gdbsupport/refcounted-object.h:
+
+target/target.h:
+
+target/waitstatus.h:
+
+../gdbsupport/gdb_signals.h:
+
+target/resume.h:
+
+target/wait.h:
+
+target/waitstatus.h:
+
+memattr.h:
+
+btrace.h:
+
+../gdbsupport/btrace-common.h:
+
+record.h:
+
+disasm.h:
+
+tracepoint.h:
+
+memrange.h:
+
+../gdbsupport/environ.h:
+
+progspace.h:
+
+gdb_bfd.h:
+
+registry.h:
+
+../gdbsupport/safe-iterator.h:
+
+symfile-add-flags.h:
+
+../gdbsupport/forward-scope-exit.h:
+
+../gdbsupport/scope-exit.h:
+
+../gdbsupport/preprocessor.h:
+
+../gdbsupport/common-inferior.h:
+
+gdbthread.h:
+
+cli/cli-utils.h:
+
+../gdbsupport/common-gdbthread.h:
+
+thread-iter.h:
+
+../gdbsupport/filtered-iterator.h:
+
+process-stratum-target.h:
+
+inferior-iter.h:
+
+../include/floatformat.h:
+
+reggroups.h:
+
+observable.h:
+
+../gdbsupport/observable.h:
+
+objfiles.h:
+
+objfile-flags.h:
+
+symfile.h:
+
+psymtab.h:
+
+bcache.h:
+
+jit.h:
+
+auxv.h:
+
+frame-unwind.h:
+
+dummy-frame.h:

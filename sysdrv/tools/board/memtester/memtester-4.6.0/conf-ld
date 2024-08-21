@@ -1,0 +1,3 @@
+arm-rockchip830-linux-uclibcgnueabihf-gcc -march=armv7-a -mfpu=neon -mfloat-abi=hard -march=armv7-a -mfpu=neon -mfloat-abi=hard -march=armv7-a -mfpu=neon -mfloat-abi=hard -s
+
+This will be used to link .o files into an executable.

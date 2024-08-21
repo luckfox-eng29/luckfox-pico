@@ -1,0 +1,89 @@
+nat/linux-procfs.o: nat/linux-procfs.c ../gdbsupport/common-defs.h \
+ ../gdbsupport/config.h ../gnulib/config.h ../gnulib/import/stdio.h \
+ ../gnulib/import/stdlib.h ../gnulib/import/stdint.h \
+ ../gnulib/import/string.h ../include/ansidecl.h ../include/libiberty.h \
+ ../include/ansidecl.h ../gnulib/import/pathmax.h \
+ ../gnulib/import/unistd.h ../include/gdb/signals.h \
+ ../include/gdb/signals.def ../gdbsupport/gdb_locale.h \
+ ../gnulib/import/locale.h ../gdbsupport/ptid.h \
+ ../gdbsupport/common-types.h ../gdbsupport/common-utils.h \
+ ../gdbsupport/poison.h ../gdbsupport/traits.h ../include/obstack.h \
+ ../gdbsupport/gdb_string_view.h ../gdbsupport/gdb_assert.h \
+ ../gdbsupport/errors.h ../gdbsupport/gdb_string_view.tcc \
+ ../gdbsupport/print-utils.h ../gdbsupport/common-debug.h \
+ ../gdbsupport/cleanups.h ../gdbsupport/common-exceptions.h \
+ ../gdbsupport/poison.h ../gdbsupport/gdb_unique_ptr.h nat/linux-procfs.h \
+ ../gdbsupport/filestuff.h ../gnulib/import/dirent.h \
+ ../gnulib/import/fcntl.h
+
+../gdbsupport/common-defs.h:
+
+../gdbsupport/config.h:
+
+../gnulib/config.h:
+
+../gnulib/import/stdio.h:
+
+../gnulib/import/stdlib.h:
+
+../gnulib/import/stdint.h:
+
+../gnulib/import/string.h:
+
+../include/ansidecl.h:
+
+../include/libiberty.h:
+
+../include/ansidecl.h:
+
+../gnulib/import/pathmax.h:
+
+../gnulib/import/unistd.h:
+
+../include/gdb/signals.h:
+
+../include/gdb/signals.def:
+
+../gdbsupport/gdb_locale.h:
+
+../gnulib/import/locale.h:
+
+../gdbsupport/ptid.h:
+
+../gdbsupport/common-types.h:
+
+../gdbsupport/common-utils.h:
+
+../gdbsupport/poison.h:
+
+../gdbsupport/traits.h:
+
+../include/obstack.h:
+
+../gdbsupport/gdb_string_view.h:
+
+../gdbsupport/gdb_assert.h:
+
+../gdbsupport/errors.h:
+
+../gdbsupport/gdb_string_view.tcc:
+
+../gdbsupport/print-utils.h:
+
+../gdbsupport/common-debug.h:
+
+../gdbsupport/cleanups.h:
+
+../gdbsupport/common-exceptions.h:
+
+../gdbsupport/poison.h:
+
+../gdbsupport/gdb_unique_ptr.h:
+
+nat/linux-procfs.h:
+
+../gdbsupport/filestuff.h:
+
+../gnulib/import/dirent.h:
+
+../gnulib/import/fcntl.h:
