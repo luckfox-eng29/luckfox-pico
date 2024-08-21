@@ -31,9 +31,9 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdint.h>
 #ifdef RK_PRINT_TO_LOGCAT
 #include <log/log.h>
 #endif
@@ -57,10 +57,10 @@ extern "C" {
  *
  * */
 
-#define TRACE_ERROR 1
-#define TRACE_INFO 2
-#define TRACE_DEBUG 3
-#define TRACE_FLOW 4
+#define TRACE_ERROR  1
+#define TRACE_INFO   2
+#define TRACE_DEBUG  3
+#define TRACE_FLOW   4
 
 #if defined(DEBUGLEVEL_0) && !defined(DEBUGLEVEL)
 #define DEBUGLEVEL TRACE_ERROR
@@ -93,72 +93,70 @@ extern "C" {
  * This define make sure that parameters are checked in the same manner as it
  * is done in the normal printf function.
  */
-#define __PRINTFLIKE(__fmt, __varargs)                                         \
-  __attribute__((__format__(__printf__, __fmt, __varargs)))
+#define __PRINTFLIKE(__fmt, __varargs) __attribute__\
+	((__format__(__printf__, __fmt, __varargs)))
 
 void _dprintf(const char *function, int line, int level, const char *prefix,
-              const char *fmt, ...) __PRINTFLIKE(5, 6);
+	      const char *fmt, ...) __PRINTFLIKE(5, 6);
 
 #ifdef RK_PRINT_TO_LOGCAT
-#define dprintf(level, x...)                                                   \
-  do {                                                                         \
-    if ((level) <= DEBUGLEVEL) {                                               \
-      switch (level) {                                                         \
-      case TRACE_ERROR:                                                        \
-        __android_log_print(ANDROID_LOG_ERROR, TEEC_LOG_TAG, x);               \
-        break;                                                                 \
-      case TRACE_INFO:                                                         \
-        __android_log_print(ANDROID_LOG_INFO, TEEC_LOG_TAG, x);                \
-        break;                                                                 \
-      case TRACE_DEBUG:                                                        \
-        __android_log_print(ANDROID_LOG_DEBUG, TEEC_LOG_TAG, x);               \
-        break;                                                                 \
-      case TRACE_FLOW:                                                         \
-        __android_log_print(ANDROID_LOG_VERBOSE, TEEC_LOG_TAG, x);             \
-        break;                                                                 \
-      default:                                                                 \
-        break;                                                                 \
-      }                                                                        \
-    }                                                                          \
-  } while (0)
+#define dprintf(level, x...) do { \
+		if ((level) <= DEBUGLEVEL) { \
+			switch (level) { \
+			case TRACE_ERROR: \
+				__android_log_print(ANDROID_LOG_ERROR, TEEC_LOG_TAG, x); \
+				break; \
+			case TRACE_INFO: \
+				__android_log_print(ANDROID_LOG_INFO, TEEC_LOG_TAG, x); \
+				break; \
+			case TRACE_DEBUG: \
+				__android_log_print(ANDROID_LOG_DEBUG, TEEC_LOG_TAG, x); \
+				break; \
+			case TRACE_FLOW: \
+				__android_log_print(ANDROID_LOG_VERBOSE, TEEC_LOG_TAG, x); \
+				break; \
+			default: \
+				break; \
+			} \
+		} \
+	} while (0)
 #else
-#define dprintf(level, x...)                                                   \
-  do {                                                                         \
-    if ((level) <= DEBUGLEVEL) {                                               \
-      _dprintf(__func__, __LINE__, level, BINARY_PREFIX, x);                   \
-    }                                                                          \
-  } while (0)
+#define dprintf(level, x...) do { \
+		if ((level) <= DEBUGLEVEL) { \
+			_dprintf(__func__, __LINE__, level, \
+				 BINARY_PREFIX, x); \
+		} \
+	} while (0)
 #endif
 
-#define EMSG(fmt, ...) dprintf(TRACE_ERROR, fmt "\n", ##__VA_ARGS__)
-#define IMSG(fmt, ...) dprintf(TRACE_INFO, fmt "\n", ##__VA_ARGS__)
-#define DMSG(fmt, ...) dprintf(TRACE_DEBUG, fmt "\n", ##__VA_ARGS__)
-#define FMSG(fmt, ...) dprintf(TRACE_FLOW, fmt "\n", ##__VA_ARGS__)
+#define EMSG(fmt, ...)   dprintf(TRACE_ERROR, fmt "\n", ##__VA_ARGS__)
+#define IMSG(fmt, ...)   dprintf(TRACE_INFO, fmt "\n", ##__VA_ARGS__)
+#define DMSG(fmt, ...)   dprintf(TRACE_DEBUG, fmt "\n", ##__VA_ARGS__)
+#define FMSG(fmt, ...)   dprintf(TRACE_FLOW, fmt "\n", ##__VA_ARGS__)
 
-#define INMSG(fmt, ...) FMSG("> " fmt, ##__VA_ARGS__)
+#define INMSG(fmt, ...)  FMSG("> " fmt, ##__VA_ARGS__)
 #define OUTMSG(fmt, ...) FMSG("< " fmt, ##__VA_ARGS__)
-#define OUTRMSG(r)                                                             \
-  do {                                                                         \
-    if (r)                                                                     \
-      EMSG("Function returns with [%d]", r);                                   \
-    OUTMSG("r=[%d]", r);                                                       \
-    return r;                                                                  \
-  } while (0)
+#define OUTRMSG(r)                              \
+	do {                                            \
+		if (r)                                      \
+			EMSG("Function returns with [%d]", r);  \
+		OUTMSG("r=[%d]", r);                        \
+		return r;                                   \
+	} while (0)
 
 #ifdef RK_PRINT_TO_LOGCAT
 #define dprintf_raw dprintf
 #else
-#define dprintf_raw(level, x...)                                               \
-  do {                                                                         \
-    if ((level) <= DEBUGLEVEL)                                                 \
-      _dprintf(0, 0, (level), BINARY_PREFIX, x);                               \
-  } while (0)
+#define dprintf_raw(level, x...) do { \
+		if ((level) <= DEBUGLEVEL) \
+			_dprintf(0, 0, (level), BINARY_PREFIX, x); \
+	} while (0)
 #endif
 
-#define EMSG_RAW(fmt, ...) dprintf_raw(TRACE_ERROR, fmt, ##__VA_ARGS__)
-#define IMSG_RAW(fmt, ...) dprintf_raw(TRACE_INFO, fmt, ##__VA_ARGS__)
-#define DMSG_RAW(fmt, ...) dprintf_raw(TRACE_DEBUG, fmt, ##__VA_ARGS__)
-#define FMSG_RAW(fmt, ...) dprintf_raw(TRACE_FLOW, fmt, ##__VA_ARGS__)
+#define EMSG_RAW(fmt, ...)   dprintf_raw(TRACE_ERROR, fmt, ##__VA_ARGS__)
+#define IMSG_RAW(fmt, ...)   dprintf_raw(TRACE_INFO, fmt, ##__VA_ARGS__)
+#define DMSG_RAW(fmt, ...)   dprintf_raw(TRACE_DEBUG, fmt, ##__VA_ARGS__)
+#define FMSG_RAW(fmt, ...)   dprintf_raw(TRACE_FLOW, fmt, ##__VA_ARGS__)
 
 /*
  * This function will hex and ascii dump a buffer.

@@ -46,9 +46,9 @@ extern "C" {
  * @return TEEC_ERROR_OUT_OF_MEMORY  Memory exhaustion.
  * @return TEEC_Result               Something failed.
  */
-TEEC_Result
-TEEC_RegisterSharedMemoryFileDescriptor(TEEC_Context *context,
-                                        TEEC_SharedMemory *sharedMem, int fd);
+TEEC_Result TEEC_RegisterSharedMemoryFileDescriptor(TEEC_Context *context,
+						    TEEC_SharedMemory *sharedMem,
+						    int fd);
 
 #ifdef __cplusplus
 }
