@@ -45,9 +45,9 @@ index 6f4858bba..cd8b65f25 100644
 -			printf("boot mode: quiescent\n");
 -			boot_mode[PL] = BOOT_MODE_QUIESCENT;
 -			break;
-+		 	printf("boot mode: quiescent\n");
-+		 	boot_mode[PL] = BOOT_MODE_QUIESCENT;
-+		 	break;
++			printf("boot mode: quiescent\n");
++			boot_mode[PL] = BOOT_MODE_QUIESCENT;
++			break;
 +    case BOOT_TO_UBOOT:
 +      printf("boot mode: uboot\n");
 +      boot_mode[PL] = BOOT_MODE_UBOOT_TERMINAL;

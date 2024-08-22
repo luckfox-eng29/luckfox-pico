@@ -3,7 +3,7 @@
 #################################################
 # 	Board Config
 #################################################
-
+export LF_ORIGIN_BOARD_CONFIG=BoardConfig-EMMC-Buildroot-RV1106_Luckfox_Pico_Ultra_W-IPC.mk
 # Target CHIP
 export RK_CHIP=rv1106
 

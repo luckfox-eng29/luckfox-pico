@@ -3,7 +3,7 @@
 #################################################
 # 	Board Config
 #################################################
-
+export LF_ORIGIN_BOARD_CONFIG=BoardConfig-SD_CARD-Buildroot-RV1106_Luckfox_Pico_Pro-IPC.mk
 # Target CHIP
 export RK_CHIP=rv1106
 
@@ -14,7 +14,7 @@ export RK_APP_TYPE=RKIPC_RV1106
 export RK_BOOTARGS_CMA_SIZE="66M"
 
 # Kernel dts
-export RK_KERNEL_DTS=rv1106g-luckfox-pico-pro-max.dts
+export RK_KERNEL_DTS=rv1106g-luckfox-pico-pro.dts
 
 #################################################
 #	BOOT_MEDIUM
@@ -79,7 +79,7 @@ export RK_MISC=wipe_all-misc.img
 
 # Uboot defconfig
 export RK_UBOOT_DEFCONFIG=rv1106_defconfig
-export RK_UBOOT_DEFCONFIG=luckfox_rv1106_uboot_defconfig
+export RK_UBOOT_DEFCONFIG=rv1106-luckfox_defconfig
 
 # Kernel defconfig
 export RK_KERNEL_DEFCONFIG=luckfox_rv1106_linux_defconfig

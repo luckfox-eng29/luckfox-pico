@@ -41,6 +41,7 @@ DTS_CONFIG=${SDK_CONFIG_DIR}/dts_config
 KERNEL_DEFCONFIG=${SDK_CONFIG_DIR}/kernel_defconfig
 BUILDROOT_DEFCONFIG=${SDK_CONFIG_DIR}/buildroot_defconfig
 UBUNTU_DIR=${SDK_SYSDRV_DIR}/tools/board/ubuntu
+KERNEL_PATH=${SDK_SYSDRV_DIR}/source/kernel
 
 export RK_JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2 + 1))
 export RK_BUILD_VERSION_TYPE=RELEASE
@@ -325,9 +326,9 @@ function build_select_board() {
 }
 
 function save_board_config() {
-	if [ -f $TARGET_PRODUCT_DIR/$ ] ;then
+	if [ -f $TARGET_PRODUCT_DIR/$ ]; then
 		cp $$BOARD_CONFIG $TARGET_PRODUCT_DIR/BoardConfig_IPC/$LF_ORIGIN_BOARD_CONFIG
-	fi 
+	fi
 }
 
 function unset_board_config_all() {
@@ -625,6 +626,15 @@ function build_uboot() {
 	echo "TARGET_UBOOT_CONFIG=$RK_UBOOT_DEFCONFIG $RK_UBOOT_DEFCONFIG_FRAGMENT"
 	echo "========================================="
 
+	if [ ! -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
+		git apply ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
+		touch ${SDK_SYSDRV_DIR}/source/.uboot_patch
+	fi
+
+	cp ${SDK_SYSDRV_DIR}/tools/board/uboot/*_defconfig ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs
+	cp ${SDK_SYSDRV_DIR}/tools/board/uboot/*.dts ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts
+	cp ${SDK_SYSDRV_DIR}/tools/board/uboot/*.dtsi ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts
+
 	local uboot_rkbin_ini tempfile target_ini_dir
 	tempfile="$SDK_SYSDRV_DIR/source/uboot/rkbin/$RK_UBOOT_RKBIN_INI_OVERLAY"
 	if [ -f "$tempfile" ]; then
@@ -761,6 +771,16 @@ function build_sysdrv() {
 
 function build_kernel() {
 	check_config RK_KERNEL_DTS RK_KERNEL_DEFCONFIG || return 0
+
+	#APPLY patcH
+	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
+		git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+		touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
+	fi
+	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
+	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/kernel-drivers-video-logo_linux_clut224.ppm ${KERNEL_PATH}/drivers/video/logo/logo_linux_clut224.ppm
+	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dts ${KERNEL_PATH}/arch/arm/boot/dts
+	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 
 	echo "============Start building kernel============"
 	echo "TARGET_ARCH          =$RK_ARCH"
@@ -1224,8 +1244,7 @@ function build_clean() {
 		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
 		rm -rf ${SDK_ROOT_DIR}/sysdrv/source/kernel/out
 		rm -rf ${BOARD_CONFIG}
-		rm -rf ${SYSDRV_DIR}/tools/board/kernel/arch/arm/config/luckfox_rv1106_linux_defconfig
-		rm -rf ${SYSDRV_DIR}/tools/board/kernel/arch/arm/config/rv1106-bt.config
+		rm -rf ${SDK_SYSDRV_DIR}/tools/board/kernel/arch/arm/config/luckfox_rv1106_linux_defconfig
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
@@ -2577,7 +2596,7 @@ function build_save() {
 
 		if [[ "$LF_TARGET_ROOTFS" == "ubuntu" ]]; then
 			sudo chmod a+rw $STUB_PARENT_PATH
-		fi		
+		fi
 		;;
 	esac
 
@@ -2622,7 +2641,6 @@ function buildroot_config() {
 }
 
 function kernel_config() {
-	KERNEL_PATH=${SDK_SYSDRV_DIR}/source/kernel
 	KERNEL_CONFIG_FILE=${KERNEL_PATH}/defconfig
 
 	if [ -f $KERNEL_CONFIG_FILE ]; then

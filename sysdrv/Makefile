@@ -480,8 +480,6 @@ kernel_savedefconfig:
 
 kernel: prepare
 	@echo -e "$(C_GREEN) ==sysdrv== build kernel  $(C_NORMAL)"
-	cp ${SYSDRV_DIR}/tools/board/kernel/luckfox_rv1106_linux_defconfig $(KERNEL_DIR)/arch/arm/configs/
-	cp ${SYSDRV_DIR}/tools/board/kernel/rv1106-bt.config $(KERNEL_DIR)/arch/arm/configs/
 	$(MAKE) -C $(KERNEL_DIR) ARCH=$(ARCH) mrproper
 ifeq ($(SYSDRV_DRIVER_MODULE), y)
 	$(call MACRO_CHK_DRIVER_MODULE, $(SYSDRV_DIR)/drv_ko/rockit/, rockit-ko)

@@ -3,12 +3,12 @@
 #################################################
 # 	Board Config
 #################################################
-
+export LF_ORIGIN_BOARD_CONFIG=BoardConfig-SD_CARD-Buildroot-RV1103_Luckfox_Pico-IPC.mk
 # Target CHIP
 export RK_CHIP=rv1106
 
 # app config
-export RK_APP_TYPE=RKIPC_RV1103
+export RK_APP_TYPE="RKIPC_RV1103 UVC_TINY"
 
 # Config CMA size in environment
 export RK_BOOTARGS_CMA_SIZE="24M"
@@ -35,7 +35,7 @@ export RK_UBOOT_DEFCONFIG_FRAGMENT=rk-emmc.config
 #       <partdef> := <size>[@<offset>](part-name)
 # Note:
 #   If the first partition offset is not 0x0, it must be added. Otherwise, it needn't adding.
-export RK_PARTITION_CMD_IN_ENV="32K(env),512K@32K(idblock),256K(uboot),32M(boot),512M(oem),256M(userdata),6G(rootfs),-(media)"
+export RK_PARTITION_CMD_IN_ENV="32K(env),512K@32K(idblock),512K(uboot),32M(boot),512M(oem),256M(userdata),6G(rootfs),-(media)"
 
 # config partition's filesystem type (squashfs is readonly)
 # emmc:    squashfs/ext4
@@ -78,7 +78,7 @@ export RK_TOOLCHAIN_CROSS=arm-rockchip830-linux-uclibcgnueabihf
 export RK_MISC=wipe_all-misc.img
 
 # Uboot defconfig
-export RK_UBOOT_DEFCONFIG=luckfox_rv1106_uboot_defconfig
+export RK_UBOOT_DEFCONFIG=rv1106-luckfox_defconfig
 
 # Kernel defconfig
 export RK_KERNEL_DEFCONFIG=luckfox_rv1106_linux_defconfig
