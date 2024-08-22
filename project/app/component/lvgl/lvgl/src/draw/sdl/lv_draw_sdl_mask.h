@@ -18,9 +18,9 @@ extern "C" {
 
 #include LV_GPU_SDL_INCLUDE_PATH
 
+#include "lv_draw_sdl.h"
 #include "../../misc/lv_area.h"
 #include "../../misc/lv_color.h"
-#include "lv_draw_sdl.h"
 
 /*********************
  *      DEFINES
@@ -34,13 +34,11 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-lv_opa_t *lv_draw_sdl_mask_dump_opa(const lv_area_t *coords, const int16_t *ids,
-                                    int16_t ids_count);
+lv_opa_t * lv_draw_sdl_mask_dump_opa(const lv_area_t * coords, const int16_t * ids, int16_t ids_count);
 
-SDL_Texture *lv_draw_sdl_mask_dump_texture(SDL_Renderer *renderer,
-                                           const lv_area_t *coords,
-                                           const int16_t *ids,
-                                           int16_t ids_count);
+SDL_Texture * lv_draw_sdl_mask_dump_texture(SDL_Renderer * renderer, const lv_area_t * coords, const int16_t * ids,
+                                            int16_t ids_count);
+
 
 /**********************
  *      MACROS

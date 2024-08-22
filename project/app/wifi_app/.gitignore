@@ -5,6 +5,7 @@ install_out
 libnl-3.4.0
 out
 wifi/lib32/librkwifibt.so
+wifi/librkwifibt.so
 wifi/test/rkwifi_server
 wpa_supplicant-2.6/wpa_supplicant/libwpa_client.so
 wpa_supplicant-2.6/wpa_supplicant/wpa_cli
