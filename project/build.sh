@@ -1214,8 +1214,9 @@ function build_clean() {
 	kernel)
 		make kernel_clean -C ${SDK_SYSDRV_DIR}
     cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/config/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
 		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/defconfig
 		;;
 	rootfs)
 		make rootfs_clean -C ${SDK_SYSDRV_DIR}
