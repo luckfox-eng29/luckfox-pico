@@ -329,8 +329,8 @@
       buswidth = <8>;
       debug = <0x7>;
       led-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;//BL
-      dc = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;      //DC
-      reset = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;    //RES
+      dc-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;      //DC
+      reset-gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;    //RES
   };
 };
 // I2C

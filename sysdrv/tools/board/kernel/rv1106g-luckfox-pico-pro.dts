@@ -10,7 +10,7 @@
 #include "rv1106-luckfox-pico-pro-max-ipc.dtsi"
 
 / {
-	model = "Luckfox Pico Max";
+	model = "Luckfox Pico Pro";
 	compatible = "rockchip,rv1103g-38x38-ipc-v10", "rockchip,rv1106";
 };
 

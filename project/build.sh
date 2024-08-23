@@ -81,7 +81,7 @@ ENV_SIZE=""
 ENV_OFFSET=""
 
 ################################################################################
-# Plubic Configure
+# Public Configure
 ################################################################################
 C_BLACK="\e[30;1m"
 C_RED="\e[31;1m"
@@ -628,7 +628,7 @@ function build_uboot() {
 
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
 		git apply ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
-		touch ${SDK_SYSDRV_DIR}/source/.uboot_patch
+		touch ${}SDK_SYSDRV_DIR}/source/.uboot_patch
 	fi
 
 	cp ${SDK_SYSDRV_DIR}/tools/board/uboot/*_defconfig ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs
@@ -1208,9 +1208,14 @@ function build_clean() {
 	case $param in
 	uboot)
 		make uboot_clean -C ${SDK_SYSDRV_DIR}
+		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 		;;
 	kernel)
 		make kernel_clean -C ${SDK_SYSDRV_DIR}
+    cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/config/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
 		;;
 	rootfs)
 		make rootfs_clean -C ${SDK_SYSDRV_DIR}
@@ -1244,7 +1249,8 @@ function build_clean() {
 		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
 		rm -rf ${SDK_ROOT_DIR}/sysdrv/source/kernel/out
 		rm -rf ${BOARD_CONFIG}
-		rm -rf ${SDK_SYSDRV_DIR}/tools/board/kernel/arch/arm/config/luckfox_rv1106_linux_defconfig
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/config/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
