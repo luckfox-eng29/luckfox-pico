@@ -127,7 +127,7 @@ else
 endif
 
 ifneq ($(findstring $(TARGET_ROOTFS),custom),)
-   ROOTFS_BUILD_ENV := 
+   ROOTFS_BUILD_ENV := custom drv 
 else ifneq ($(findstring $(TARGET_ROOTFS),ubuntu),)
    ROOTFS_BUILD_ENV := ubuntu drv
 else ifneq ($(findstring $(TARGET_ROOTFS),buildroot),)
@@ -288,6 +288,7 @@ BUILDROOT_VER ?= buildroot-2023.02.6
 BUILDROOT_DIR := $(SYSDRV_DIR)/source/buildroot
 
 UBUNTU_VER ?= luckfox-ubuntu-22.04.3
+CUSTOM_VER ?= custom
 
 TOOLCHAIN_RUNTIME_LIB_C:=lib.tar.bz2
 
@@ -694,6 +695,24 @@ ifeq ($(ENABLE_EMMC),YES)
 	cp $(SYSDRV_DIR)/tools/board/emmc/udhcp/etc/udhcpd.conf $(SYSDRV_DIR_OUT_ROOTFS)/etc/udhcpd.conf
 endif
 ubuntu_clean:
+	$(AT)rm -rf $(SYSDRV_DIR_OUT_ROOTFS)
+
+
+##########################################################################################
+#   build custom
+#   author :luckfox team
+#	date:2024-08-31
+##########################################################################################
+custom: prepare
+	@echo -e "$(C_GREEN) ==sysdrv== build custom   $(C_NORMAL)" 
+	@echo -e "$(C_GREEN) ==$(LF_TARGET_ROOTFS)== $(C_NORMAL)"
+	test ! -f $(SYSDRV_DIR)/tools/board/custom/$(CUSTOM_VER).tar.gz || (\
+		mkdir -p $(SYSDRV_DIR_OUT_ROOTFS) ;\
+		rm $(SYSDRV_DIR_OUT_ROOTFS)/* -rf ;\
+		tar xzf $(SYSDRV_DIR)/tools/board/custom/$(CUSTOM_VER).tar.gz -C $(SYSDRV_DIR_OUT_ROOTFS) ;\
+	);
+
+custom_clean:
 	$(AT)rm -rf $(SYSDRV_DIR_OUT_ROOTFS)
 
 ##########################################################################################

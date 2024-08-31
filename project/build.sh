@@ -1242,7 +1242,17 @@ function build_clean() {
 		make kernel_clean -C ${SDK_SYSDRV_DIR} SYSDRV_BUILD_RECOVERY=y
 		;;
 	all)
-		make distclean -C ${SDK_SYSDRV_DIR}
+
+    if [ -f ${SDK_SYSDRV_DIR}/sysdrv/source/.uboot_patch ]; then
+      git apply -R ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
+      rm ${SDK_SYSDRV_DIR}/sysdrv/source/.uboot_patch
+    fi
+
+    if [ -f ${SDK_SYSDRV_DIR}/sysdrv/source/.kernel_patch ]; then
+      git apply -R ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+      rm ${SDK_SYSDRV_DIR}/sysdrv/source/.kernel_patch
+    fi
+    make distclean -C ${SDK_SYSDRV_DIR}
 		make distclean -C ${SDK_MEDIA_DIR}
 		make distclean -C ${SDK_APP_DIR}
 		rm -rf ${RK_PROJECT_OUTPUT_IMAGE} ${RK_PROJECT_OUTPUT}
@@ -1250,8 +1260,10 @@ function build_clean() {
 		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
 		rm -rf ${SDK_ROOT_DIR}/sysdrv/source/kernel/out
 		rm -rf ${BOARD_CONFIG}
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/config/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
 		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
+		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
