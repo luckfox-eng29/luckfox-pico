@@ -781,7 +781,9 @@ function build_kernel() {
 	#Apply patch
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
 		echo "============Apply Kernel Patch============"
-		git apply --verbose  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+		git apply --check  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+		echo "git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch"
+		git apply --verbose  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch	
 		touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
 	fi
 
