@@ -626,9 +626,17 @@ function build_uboot() {
 	echo "TARGET_UBOOT_CONFIG=$RK_UBOOT_DEFCONFIG $RK_UBOOT_DEFCONFIG_FRAGMENT"
 	echo "========================================="
 
+	#Apply patch
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
+		echo "============Apply Uboot Patch============"
 		git apply ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
-		touch ${}SDK_SYSDRV_DIR}/source/.uboot_patch
+		if [ $? -eq 0 ]; then
+			msg_info "Patch applied successfully."
+			touch ${SDK_SYSDRV_DIR}/source/.uboot_patch	
+		else
+			msg_error "Failed to apply the patch."		
+			exit 1 
+		fi
 	fi
 
 	cp ${SDK_SYSDRV_DIR}/tools/board/uboot/*_defconfig ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs
@@ -770,18 +778,20 @@ function build_sysdrv() {
 }
 
 function build_kernel() {
-	check_config RK_KERNEL_DTS RK_KERNEL_DEFCONFIG || return 0
-
-	#APPLY patcH
+	#Apply patch
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
-		git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+		echo "============Apply Kernel Patch============"
+		git apply --verbose  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
 		touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
 	fi
+
 	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
 	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/kernel-drivers-video-logo_linux_clut224.ppm ${KERNEL_PATH}/drivers/video/logo/logo_linux_clut224.ppm
 	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dts ${KERNEL_PATH}/arch/arm/boot/dts
 	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 
+	check_config RK_KERNEL_DTS RK_KERNEL_DEFCONFIG || return 0
+	
 	echo "============Start building kernel============"
 	echo "TARGET_ARCH          =$RK_ARCH"
 	echo "TARGET_KERNEL_CONFIG =$RK_KERNEL_DEFCONFIG"
@@ -808,6 +818,8 @@ function build_rootfs() {
 
 	make rootfs -C ${SDK_SYSDRV_DIR}
 
+	__LINK_DEFCONFIG_FROM_BOARD_CFG
+	
 	local rootfs_tarball rootfs_out_dir
 	rootfs_tarball="$RK_PROJECT_PATH_SYSDRV/rootfs_${RK_LIBC_TPYE}_${RK_CHIP}.tar"
 	rootfs_out_dir="$RK_PROJECT_OUTPUT/rootfs_${RK_LIBC_TPYE}_${RK_CHIP}"
@@ -1208,15 +1220,9 @@ function build_clean() {
 	case $param in
 	uboot)
 		make uboot_clean -C ${SDK_SYSDRV_DIR}
-		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 		;;
 	kernel)
 		make kernel_clean -C ${SDK_SYSDRV_DIR}
-    cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/defconfig
 		;;
 	rootfs)
 		make rootfs_clean -C ${SDK_SYSDRV_DIR}
@@ -1241,18 +1247,26 @@ function build_clean() {
 	recovery)
 		make kernel_clean -C ${SDK_SYSDRV_DIR} SYSDRV_BUILD_RECOVERY=y
 		;;
+	patch)	
+		make uboot_clean -C ${SDK_SYSDRV_DIR}
+		if [ -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
+			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
+			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
+			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
+			rm ${SDK_SYSDRV_DIR}/source/.uboot_patch
+		fi
+
+		make kernel_clean -C ${SDK_SYSDRV_DIR}
+		if [ -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
+			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
+			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
+			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
+			rm ${SDK_SYSDRV_DIR}/source/.kernel_patch
+		fi	
+		;;
 	all)
-
-    if [ -f ${SDK_SYSDRV_DIR}/sysdrv/source/.uboot_patch ]; then
-      git apply -R ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
-      rm ${SDK_SYSDRV_DIR}/sysdrv/source/.uboot_patch
-    fi
-
-    if [ -f ${SDK_SYSDRV_DIR}/sysdrv/source/.kernel_patch ]; then
-      git apply -R ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
-      rm ${SDK_SYSDRV_DIR}/sysdrv/source/.kernel_patch
-    fi
-    make distclean -C ${SDK_SYSDRV_DIR}
+		make distclean -C ${SDK_SYSDRV_DIR}
 		make distclean -C ${SDK_MEDIA_DIR}
 		make distclean -C ${SDK_APP_DIR}
 		rm -rf ${RK_PROJECT_OUTPUT_IMAGE} ${RK_PROJECT_OUTPUT}
@@ -1260,10 +1274,6 @@ function build_clean() {
 		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
 		rm -rf ${SDK_ROOT_DIR}/sysdrv/source/kernel/out
 		rm -rf ${BOARD_CONFIG}
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
-		rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
@@ -2119,6 +2129,17 @@ __LINK_DEFCONFIG_FROM_BOARD_CFG() {
 		sudo chmod a+rw $SDK_CONFIG_DIR
 	fi
 
+	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
+		echo "============Apply Kernel Patch============"
+		git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+		if [ $? -eq 0 ]; then
+			msg_info "Patch applied successfully."
+			touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
+		else
+			msg_error "Failed to apply the patch."		
+		fi
+	fi
+
 	if [ -n "$RK_KERNEL_DTS" ]; then
 		rm -f $DTS_CONFIG
 		ln -rfs $SDK_SYSDRV_DIR/source/kernel/arch/arm/boot/dts/$RK_KERNEL_DTS $DTS_CONFIG
@@ -2153,7 +2174,6 @@ function __PREPARE_BOARD_CFG() {
 		SYS_BOOTARGS="$SYS_BOOTARGS $RK_PARTITION_ARGS"
 	fi
 	__GET_BOOTARGS_FROM_BOARD_CFG
-	__LINK_DEFCONFIG_FROM_BOARD_CFG
 
 	export RK_KERNEL_CMDLINE_FRAGMENT=${SYS_BOOTARGS#sys_bootargs=}
 }
@@ -2514,60 +2534,26 @@ function build_firmware() {
 	finish_build
 }
 
-function __GET_REPO_INFO() {
-	local repo_tool _date _stub_path _stub_patch_path
+# SAVE ALL KERNEL CONFIG
+function _SAVE_KERNEL_CONFIG() {
+	cp ${KERNEL_PATH}/arch/arm/configs/*luckfox*  ${SDK_SYSDRV_DIR}/tools/board/kernel/
+	cp ${KERNEL_PATH}/arch/arm/boot/dts/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/kernel/
+}
 
-	_date=$1
-	_stub_path=$2
-	_stub_patch_path=$3
-
-	repo_tool="$SDK_ROOT_DIR/.repo/repo/repo"
-
-	test -f $repo_tool || (echo "Not found repo... skip" && return 0)
-
-	if ! $repo_tool version &>/dev/null; then
-		repo_tool="repo"
-		if ! $repo_tool version &>/dev/null; then
-			msg_warn "Not found repo tool, ignore"
-			return 0
-		fi
+# SAVE ALL BUILDROOT CONFIG 
+function _SAVE_BUILDROOT_CONFIG(){
+	if [ -d ${BUILDROOT_PATH} ] ;then 
+		cp ${BUILDROOT_PATH}/configs/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/buildroot
 	fi
-
-	#Generate patches
-	$repo_tool forall -c "$PROJECT_TOP_DIR/scripts/gen_patches_body.sh" || return 0
-
-	#Copy stubs
-	$repo_tool manifest -r -o $SDK_ROOT_DIR/manifest_${_date}.xml || return 0
-
-	local tmp_merge=$(mktemp) tmp_merge_new=$(mktemp) tmp_path tmp_commit
-	find $_stub_patch_path -name git-merge-base.txt >$tmp_merge_new
-	while read line; do
-		tmp_path="${line##*PATCHES/}"
-		tmp_path=$(dirname $tmp_path)
-		tmp_commit=$(grep -w "^commit" $line | awk -F ' ' '{print $2}')
-		echo "$tmp_path $tmp_commit" >>$tmp_merge
-	done <$tmp_merge_new
-	rm -f $tmp_merge_new
-
-	mv $SDK_ROOT_DIR/manifest_${_date}.xml $_stub_path/
-
-	while IFS=' ' read line_project line_commit; do
-		chkcmd="sed -i \"/\<path=\\\"${line_project//\//\\\/}\\\"/s/revision=\\\"\w\{40\}\\\" /revision=\\\"$line_commit\\\" /\"  $_stub_path/manifest_${_date}.xml"
-		eval $chkcmd
-	done <$tmp_merge
-	rm $tmp_merge
 }
 
 function build_save() {
 	case $1 in
-	board)
-		save_board_config
-		;;
 	kernel)
-		save_kernel_defconfig
+		_SAVE_KERNEL_CONFIG
 		;;
 	buildroot)
-		save_buildroot_defconfig
+		_SAVE_BUILDROOT_CONFIG
 		;;
 	*)
 		IMAGE_PATH=$RK_PROJECT_OUTPUT_IMAGE
@@ -2591,8 +2577,6 @@ function build_save() {
 		mkdir -p $STUB_PATH/IMAGES/
 		test -d $IMAGE_PATH &&
 			(cp $IMAGE_PATH/* $STUB_PATH/IMAGES/ || msg_warn "Not found images... ignore")
-
-		__GET_REPO_INFO $DATE $STUB_PATH $STUB_PATCH_PATH
 
 		mkdir -p $STUB_DEBUG_FILES_PATH/kernel
 		test -f $RK_PROJECT_PATH_BOARD_BIN/vmlinux && cd $RK_PROJECT_PATH_BOARD_BIN/ &&
@@ -2640,6 +2624,8 @@ function buildroot_config() {
 			make buildroot_create -C ${SDK_SYSDRV_DIR}
 		fi
 
+		__LINK_DEFCONFIG_FROM_BOARD_CFG
+		
 		if [ -f $BUILDROOT_CONFIG_FILE ]; then
 			BUILDROOT_CONFIG_FILE_MD5=$(md5sum "$BUILDROOT_CONFIG_FILE")
 			make buildroot_menuconfig -C ${SDK_SYSDRV_DIR}
@@ -2684,8 +2670,9 @@ function kernel_config() {
 trap 'err_handler' ERR
 cd $PROJECT_TOP_DIR
 unset_board_config_all
-if [ "$1" = "lunch" ]; then
+if [ "$1" = "lunch" ]; then	
 	build_select_board LUNCH-FORCE
+	__LINK_DEFCONFIG_FROM_BOARD_CFG
 fi
 
 if [ "$1" = "mcu" ]; then
@@ -2693,7 +2680,12 @@ if [ "$1" = "mcu" ]; then
 fi
 
 if [ ! -e "$BOARD_CONFIG" ]; then
-	build_select_board
+	if [ "$1" = "clean" ]; then
+		msg_info "The $BOARD_CONFIG is missing, and the SDK has not been built yet."
+		exit 1
+	else
+		build_select_board
+	fi
 fi
 [ -L "$BOARD_CONFIG" ] && source $BOARD_CONFIG
 export RK_PROJECT_BOARD_DIR=$(dirname $(realpath $BOARD_CONFIG))
