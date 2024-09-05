@@ -629,6 +629,7 @@ function build_uboot() {
 	#Apply patch
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
 		echo "============Apply Uboot Patch============"
+		cd ${SDK_ROOT_DIR}
 		git apply ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
 		if [ $? -eq 0 ]; then
 			msg_info "Patch applied successfully."
@@ -781,16 +782,21 @@ function build_kernel() {
 	#Apply patch
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
 		echo "============Apply Kernel Patch============"
-		git apply --check  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
-		echo "git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch"
-		git apply --verbose  ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch	
-		touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
+		cd ${SDK_ROOT_DIR}
+		git apply --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch  
+		if [ $? -eq 0 ]; then
+			msg_info "Patch applied successfully."
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.config ${KERNEL_PATH}/arch/arm/configs/
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/kernel-drivers-video-logo_linux_clut224.ppm ${KERNEL_PATH}/drivers/video/logo/logo_linux_clut224.ppm
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dts ${KERNEL_PATH}/arch/arm/boot/dts
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
+			touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
+		else
+			msg_error "Failed to apply the patch."		
+		fi
 	fi
 
-	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
-	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/kernel-drivers-video-logo_linux_clut224.ppm ${KERNEL_PATH}/drivers/video/logo/logo_linux_clut224.ppm
-	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dts ${KERNEL_PATH}/arch/arm/boot/dts
-	cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 
 	check_config RK_KERNEL_DTS RK_KERNEL_DEFCONFIG || return 0
 	
@@ -1250,6 +1256,7 @@ function build_clean() {
 		make kernel_clean -C ${SDK_SYSDRV_DIR} SYSDRV_BUILD_RECOVERY=y
 		;;
 	patch)	
+		cd ${SDK_ROOT_DIR}
 		make uboot_clean -C ${SDK_SYSDRV_DIR}
 		if [ -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
 			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
@@ -1489,7 +1496,10 @@ EOF
 		cp $WIFI_CONF $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc
 	fi
 
-	__COPY_FILES $RK_PROJECT_PATH_APP/root $RK_PROJECT_PACKAGE_ROOTFS_DIR
+	
+	if [ "$LF_TARGET_ROOTFS" == "buildroot" ] || [ "$LF_TARGET_ROOTFS" == "busybox" ]; then
+		__COPY_FILES $RK_PROJECT_PATH_APP/root $RK_PROJECT_PACKAGE_ROOTFS_DIR
+	fi
 	__COPY_FILES $RK_PROJECT_PATH_MEDIA/root $RK_PROJECT_PACKAGE_ROOTFS_DIR
 	__COPY_FILES $SDK_ROOT_DIR/external $RK_PROJECT_PACKAGE_ROOTFS_DIR
 
@@ -2133,9 +2143,15 @@ __LINK_DEFCONFIG_FROM_BOARD_CFG() {
 
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
 		echo "============Apply Kernel Patch============"
+		cd ${SDK_ROOT_DIR}
 		git apply ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
 		if [ $? -eq 0 ]; then
 			msg_info "Patch applied successfully."
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.config ${KERNEL_PATH}/arch/arm/configs/
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/kernel-drivers-video-logo_linux_clut224.ppm ${KERNEL_PATH}/drivers/video/logo/logo_linux_clut224.ppm
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dts ${KERNEL_PATH}/arch/arm/boot/dts
+			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 			touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
 		else
 			msg_error "Failed to apply the patch."		
