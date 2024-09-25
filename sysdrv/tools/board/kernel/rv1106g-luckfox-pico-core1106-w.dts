@@ -51,6 +51,7 @@
 };
 
 &fiq_debugger {
+  rockchip,baudrate = <1500000>;
 	rockchip,irq-mode-enable = <1>;
 	status = "okay";
 };
@@ -114,13 +115,5 @@
       rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
     };
   };
-};
-
-/**********SPI**********/
-&spi0 {
-	status = "disabled";
-	spidev@0 {
-		spi-max-frequency = <50000000>;
-	};
 };
 

@@ -80,6 +80,10 @@ ifneq ($(findstring $(RK_ENABLE_WIFI_CHIP),"ATBM6441"),)
 	@make -C atbm6441/
 endif
 
+ifneq ($(findstring $(RK_ENABLE_WIFI_CHIP),"AIC8800DC"),)
+	@make -C aic8800dc/
+endif
+
 ifneq ($(WIFI_RFKILL),)
 ifneq ($(findstring $(RK_ENABLE_WIFI_CHIP),"AP6XXX"),)
 	@make -C bcmdhd/
@@ -99,6 +103,7 @@ build-sdio:
 	@make -C hichannel/
 	@make -C atbm/
 	@make -C atbm6441/
+	@make -C aic8800dc/
 ifneq ($(WIFI_RFKILL),)
 	@make -C bcmdhd/
 endif

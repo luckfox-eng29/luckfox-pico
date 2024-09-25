@@ -12,11 +12,6 @@
 / {
 	model = "Luckfox Pico Core1106"
 	compatible = "rockchip,rv1103g-38x38-ipc-v10", "rockchip,rv1106";
-
-	restart-poweroff {
-		compatible = "restart-poweroff";
-	};
-
 };
 
 /**********SDMMC**********/

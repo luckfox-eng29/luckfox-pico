@@ -38,15 +38,6 @@ index 000000000..07e74c4bd
 +CONFIG_BT_HCIUART_H4=y
 +CONFIG_RFKILL=y
 +CONFIG_RFKILL_RK=y
-diff --git a/sysdrv/source/kernel/drivers/kmpp b/sysdrv/source/kernel/drivers/kmpp
-index 15c2a7429..8ab19db19 120000
---- a/sysdrv/source/kernel/drivers/kmpp
-+++ b/sysdrv/source/kernel/drivers/kmpp
-@@ -1 +1 @@
--/home/cro/Sdk/RV1106_IPC_SDK/sysdrv/drv_ko/kmpp//release_kmpp_rv1106_arm_asm
-\ No newline at end of file
-+/home/cro/Sdk/luckfox-pico/sysdrv/drv_ko/kmpp//release_kmpp_rv1106_arm_asm
-\ No newline at end of file
 diff --git a/sysdrv/source/kernel/drivers/of/Kconfig b/sysdrv/source/kernel/drivers/of/Kconfig
 index c177b4208..b20cc8f1f 100644
 --- a/sysdrv/source/kernel/drivers/of/Kconfig
@@ -537,15 +528,6 @@ index 80b5552fd..dbf558d0f 100644
  #define RK_GPIO0_A0	0
  #define RK_GPIO0_A1	1
  #define RK_GPIO0_A2	2
-diff --git a/sysdrv/source/kernel/drivers/rockit-ko b/sysdrv/source/kernel/drivers/rockit-ko
-index e6dd48a0a..e7b760b47 120000
---- a/sysdrv/source/kernel/drivers/rockit-ko
-+++ b/sysdrv/source/kernel/drivers/rockit-ko
-@@ -1 +1 @@
--/home/cro/Sdk/RV1106_IPC_SDK/sysdrv/drv_ko/rockit//release_rockit-ko_rv1106_arm_asm
-\ No newline at end of file
-+/home/cro/Sdk/luckfox-pico/sysdrv/drv_ko/rockit//release_rockit-ko_rv1106_arm_asm
-\ No newline at end of file
 diff --git a/sysdrv/source/kernel/drivers/staging/fbtft/fbtft-core.c b/sysdrv/source/kernel/drivers/staging/fbtft/fbtft-core.c
 index d0c8d85f3..2baffa436 100644
 --- a/sysdrv/source/kernel/drivers/staging/fbtft/fbtft-core.c

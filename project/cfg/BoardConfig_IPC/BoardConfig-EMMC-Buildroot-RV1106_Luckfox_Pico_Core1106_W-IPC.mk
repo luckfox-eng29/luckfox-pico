@@ -59,7 +59,7 @@ export RK_PARTITION_FS_TYPE_CFG=rootfs@IGNORE@ext4,userdata@/userdata@ext4,oem@/
 #################################################
 
 # Target rootfs : ubuntu(only emmc)/buildroot/busybox
-export LF_TARGET_ROOTFS=buildroot
+export LF_TARGET_ROOTFS=busybox
 
 # Buildroot defconfig
 export RK_BUILDROOT_DEFCONFIG=luckfox_pico_w_defconfig
@@ -74,7 +74,7 @@ export RK_ARCH=arm
 # Target Toolchain Cross Compile
 export RK_TOOLCHAIN_CROSS=arm-rockchip830-linux-uclibcgnueabihf
 
-#misc image
+# misc image
 export RK_MISC=wipe_all-misc.img
 
 # Uboot defconfig
@@ -113,4 +113,5 @@ export RK_ENABLE_WIFI_CHIP=AIC8800DC
 # config wifi ssid and passwd
 export LF_WIFI_SSID="Your wifi ssid"
 export LF_WIFI_PSK="Your wifi password"
+
 

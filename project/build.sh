@@ -42,6 +42,9 @@ KERNEL_DEFCONFIG=${SDK_CONFIG_DIR}/kernel_defconfig
 BUILDROOT_DEFCONFIG=${SDK_CONFIG_DIR}/buildroot_defconfig
 UBUNTU_DIR=${SDK_SYSDRV_DIR}/tools/board/ubuntu
 KERNEL_PATH=${SDK_SYSDRV_DIR}/source/kernel
+UBOOT_PATH=${SDK_SYSDRV_DIR}/source/uboot/u-boot
+#for custom rootfs
+CUSTOM_ROOT=${SDK_ROOT_DIR}/custom_root
 
 export RK_JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2 + 1))
 export RK_BUILD_VERSION_TYPE=RELEASE
@@ -610,6 +613,11 @@ function __modify_file() {
 	fi
 
 	rm -f $target_file
+
+	if [ ! -d "$RK_PROJECT_PATH_FASTBOOT" ]; then
+		mkdir -p $RK_PROJECT_PATH_FASTBOOT
+	fi
+
 	while read line; do
 		if echo "$line" | grep "$flag_opt_match_start$find_str$flag_opt_match_end"; then
 			echo "$find_str$replace_str" >>$target_file
@@ -633,10 +641,10 @@ function build_uboot() {
 		git apply ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
 		if [ $? -eq 0 ]; then
 			msg_info "Patch applied successfully."
-			touch ${SDK_SYSDRV_DIR}/source/.uboot_patch	
+			touch ${SDK_SYSDRV_DIR}/source/.uboot_patch
 		else
-			msg_error "Failed to apply the patch."		
-			exit 1 
+			msg_error "Failed to apply the patch."
+			exit 1
 		fi
 	fi
 
@@ -653,7 +661,6 @@ function build_uboot() {
 	target_ini_dir=$SDK_SYSDRV_DIR/source/uboot/rkbin/RKBOOT/
 	if [ "$RK_ENABLE_FASTBOOT" = "y" -a -n "$RK_UBOOT_RKBIN_MCU_CFG" ]; then
 		uboot_rkbin_ini=$RK_PROJECT_PATH_FASTBOOT/rk_uboot_rkbin_rkboot_overlay.ini
-
 		build_mcu $RK_UBOOT_RKBIN_MCU_CFG "__MCU_CONTINUE__"
 		case $RK_BOOT_MEDIUM in
 		emmc)
@@ -783,7 +790,7 @@ function build_kernel() {
 	if [ ! -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
 		echo "============Apply Kernel Patch============"
 		cd ${SDK_ROOT_DIR}
-		git apply --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch  
+		git apply --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
 		if [ $? -eq 0 ]; then
 			msg_info "Patch applied successfully."
 			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*_defconfig ${KERNEL_PATH}/arch/arm/configs/
@@ -793,13 +800,12 @@ function build_kernel() {
 			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 			touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
 		else
-			msg_error "Failed to apply the patch."		
+			msg_error "Failed to apply the patch."
 		fi
 	fi
 
-
 	check_config RK_KERNEL_DTS RK_KERNEL_DEFCONFIG || return 0
-	
+
 	echo "============Start building kernel============"
 	echo "TARGET_ARCH          =$RK_ARCH"
 	echo "TARGET_KERNEL_CONFIG =$RK_KERNEL_DEFCONFIG"
@@ -827,7 +833,7 @@ function build_rootfs() {
 	make rootfs -C ${SDK_SYSDRV_DIR}
 
 	__LINK_DEFCONFIG_FROM_BOARD_CFG
-	
+
 	local rootfs_tarball rootfs_out_dir
 	rootfs_tarball="$RK_PROJECT_PATH_SYSDRV/rootfs_${RK_LIBC_TPYE}_${RK_CHIP}.tar"
 	rootfs_out_dir="$RK_PROJECT_OUTPUT/rootfs_${RK_LIBC_TPYE}_${RK_CHIP}"
@@ -1255,11 +1261,11 @@ function build_clean() {
 	recovery)
 		make kernel_clean -C ${SDK_SYSDRV_DIR} SYSDRV_BUILD_RECOVERY=y
 		;;
-	patch)	
+	patch)
 		cd ${SDK_ROOT_DIR}
 		make uboot_clean -C ${SDK_SYSDRV_DIR}
 		if [ -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
-			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
+			git apply -R ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
 			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
 			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 			rm ${SDK_SYSDRV_DIR}/source/.uboot_patch
@@ -1267,12 +1273,12 @@ function build_clean() {
 
 		make kernel_clean -C ${SDK_SYSDRV_DIR}
 		if [ -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
-			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+			git apply -R ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
 			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
 			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
 			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
 			rm ${SDK_SYSDRV_DIR}/source/.kernel_patch
-		fi	
+		fi
 		;;
 	all)
 		make distclean -C ${SDK_SYSDRV_DIR}
@@ -1283,6 +1289,15 @@ function build_clean() {
 		rm -rf ${SDK_ROOT_DIR}/output ${SDK_ROOT_DIR}/config
 		rm -rf ${SDK_ROOT_DIR}/sysdrv/source/kernel/out
 		rm -rf ${BOARD_CONFIG}
+		if [ -d ${SDK_SYSDRV_DIR}/source/buildroot ]; then
+			rm -rf ${SDK_SYSDRV_DIR}/source/buildroot
+		fi
+		if [ -d ${SDK_SYSDRV_DIR}/source/busybox ]; then
+			rm -rf ${SDK_SYSDRV_DIR}/source/busybox
+		fi
+		if [ -d ${SDK_SYSDRV_DIR}/source/objs_kernel ]; then
+			rm -rf ${SDK_SYSDRV_DIR}/source/objs_kernel
+		fi
 		;;
 	*)
 		msg_warn "clean [$1] not support, ignore"
@@ -1483,21 +1498,20 @@ function __PACKAGE_ROOTFS() {
 		exit 0
 	fi
 
-	build_get_sdk_version
+	if [ "$RK_BOOT_MEDIUM" == "emmc" ] && [ "$LF_TARGET_ROOTFS" == "ubuntu" ]; then
+		if [ -f $WIFI_CONF ]; then
+			cp $WIFI_CONF $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc
+		fi
+	fi
 
-	cat >$RK_PROJECT_PACKAGE_ROOTFS_DIR/bin/sdkinfo <<EOF
+	if [ "$LF_TARGET_ROOTFS" == "buildroot" ] || [ "$LF_TARGET_ROOTFS" == "busybox" ]; then
+		build_get_sdk_version
+		cat >$RK_PROJECT_PACKAGE_ROOTFS_DIR/bin/sdkinfo <<EOF
 #!/bin/sh
 echo Build Time:  $(date "+%Y-%m-%d-%T")
 echo SDK Version: ${GLOBAL_SDK_VERSION}
 EOF
-	chmod a+x $RK_PROJECT_PACKAGE_ROOTFS_DIR/bin/sdkinfo
-
-	if [ "$RK_BOOT_MEDIUM" == "emmc" ] && [ "$LF_TARGET_ROOTFS" == "ubuntu" ]; then
-		cp $WIFI_CONF $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc
-	fi
-
-	
-	if [ "$LF_TARGET_ROOTFS" == "buildroot" ] || [ "$LF_TARGET_ROOTFS" == "busybox" ]; then
+		chmod a+x $RK_PROJECT_PACKAGE_ROOTFS_DIR/bin/sdkinfo
 		__COPY_FILES $RK_PROJECT_PATH_APP/root $RK_PROJECT_PACKAGE_ROOTFS_DIR
 	fi
 	__COPY_FILES $RK_PROJECT_PATH_MEDIA/root $RK_PROJECT_PACKAGE_ROOTFS_DIR
@@ -2154,7 +2168,7 @@ __LINK_DEFCONFIG_FROM_BOARD_CFG() {
 			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/*.dtsi ${KERNEL_PATH}/arch/arm/boot/dts
 			touch ${SDK_SYSDRV_DIR}/source/.kernel_patch
 		else
-			msg_error "Failed to apply the patch."		
+			msg_error "Failed to apply the patch."
 		fi
 	fi
 
@@ -2552,21 +2566,30 @@ function build_firmware() {
 	finish_build
 }
 
+# SAVE ALL UBOOT CONFIG
+function _SAVE_UBOOT_CONFIG() {
+	cp ${UBOOT_PATH}/configs/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/uboot/
+	cp ${UBOOT_PATH}/arch/arm/dts/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/uboot/
+}
+
 # SAVE ALL KERNEL CONFIG
 function _SAVE_KERNEL_CONFIG() {
-	cp ${KERNEL_PATH}/arch/arm/configs/*luckfox*  ${SDK_SYSDRV_DIR}/tools/board/kernel/
+	cp ${KERNEL_PATH}/arch/arm/configs/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/kernel/
 	cp ${KERNEL_PATH}/arch/arm/boot/dts/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/kernel/
 }
 
-# SAVE ALL BUILDROOT CONFIG 
-function _SAVE_BUILDROOT_CONFIG(){
-	if [ -d ${BUILDROOT_PATH} ] ;then 
+# SAVE ALL BUILDROOT CONFIG
+function _SAVE_BUILDROOT_CONFIG() {
+	if [ -d ${BUILDROOT_PATH} ]; then
 		cp ${BUILDROOT_PATH}/configs/*luckfox* ${SDK_SYSDRV_DIR}/tools/board/buildroot
 	fi
 }
 
 function build_save() {
 	case $1 in
+	uboot)
+		_SAVE_UBOOT_CONFIG
+		;;
 	kernel)
 		_SAVE_KERNEL_CONFIG
 		;;
@@ -2643,7 +2666,7 @@ function buildroot_config() {
 		fi
 
 		__LINK_DEFCONFIG_FROM_BOARD_CFG
-		
+
 		if [ -f $BUILDROOT_CONFIG_FILE ]; then
 			BUILDROOT_CONFIG_FILE_MD5=$(md5sum "$BUILDROOT_CONFIG_FILE")
 			make buildroot_menuconfig -C ${SDK_SYSDRV_DIR}
@@ -2688,7 +2711,7 @@ function kernel_config() {
 trap 'err_handler' ERR
 cd $PROJECT_TOP_DIR
 unset_board_config_all
-if [ "$1" = "lunch" ]; then	
+if [ "$1" = "lunch" ]; then
 	build_select_board LUNCH-FORCE
 	__LINK_DEFCONFIG_FROM_BOARD_CFG
 fi
@@ -2725,7 +2748,7 @@ if [[ "$LF_TARGET_ROOTFS" = "ubuntu" ]]; then
 		fi
 	fi
 
-	if [ -d "$UBUNTU_DIR" ] && [ -f ${UBUNTU_DIR}/luckfox-ubuntu-22.04.3.tar.gz ]; then
+	if [ -d "$UBUNTU_DIR" ] && [ -f ${UBUNTU_DIR}/luckfox-ubuntu-22.04.3.tar.gz.md5 ]; then
 		msg_info "${UBUNTU_DIR} is not empty, skipping submodule update!"
 	else
 		msg_info "${UBUNTU_DIR} is empty or does not exist, updateing submodule!"
@@ -2775,7 +2798,10 @@ while [ $# -ne 0 ]; do
 	case $1 in
 	DEBUG) export RK_BUILD_VERSION_TYPE=DEBUG ;;
 	all) option=build_all ;;
-	save) option=build_save ;;
+	save)
+		option="build_save $2"
+		break
+		;;
 	allsave) option=build_allsave ;;
 	check) option=build_check ;;
 	clean)

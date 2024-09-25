@@ -12,17 +12,6 @@
 / {
 	model = "Luckfox Pico Ultra";
 	compatible = "rockchip,rv1103g-38x38-ipc-v10", "rockchip,rv1106g3";
-
-	restart-poweroff {
-		compatible = "restart-poweroff";
-	};
-
-	sdio_pwrseq: sdio-pwrseq {
-		compatible = "mmc-pwrseq-simple";
-		pinctrl-names = "default";
-	    pinctrl-0 = <&wifi_enable>;
-		reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
-	};
 };
 
 /**********CRU**********/

@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # remove unused files
-function remove_data()
-{
-	if [ "$RK_BUILD_APP_TO_OEM_PARTITION" != "y" ];then
+function remove_data() {
+	if [ "$RK_BUILD_APP_TO_OEM_PARTITION" != "y" ]; then
 		# delete except app1, app2, app3, do like this: delete_except=".*/\|.*/app1\|.*/app2\|.*app3"
 		delete_except=".*/\|.*/smart_door\|.*/fastboot_server"
 		find "$RK_PROJECT_PACKAGE_ROOTFS_DIR/oem/usr/bin" ! -regex $delete_except -delete
@@ -12,93 +11,88 @@ function remove_data()
 		delete_except=".*/\|.*/librkaiq.so"
 		find "$RK_PROJECT_PACKAGE_ROOTFS_DIR/oem/usr/lib" ! -regex $delete_except -delete
 
-		local unused_in_oem=(\
+		local unused_in_oem=(
 			# wifi ko
-			"usr/ko/cfg80211.ko" \
-			"usr/ko/gf128mul.ko" \
-			"usr/ko/ctr.ko"  \
-			"usr/ko/libaes.ko" \
-			"usr/ko/sha256_generic.ko" \
-			"usr/ko/aes_generic.ko" \
-			"usr/ko/ccm.ko" \
-			"usr/ko/libarc4.ko" \
-			"usr/ko/cmac.ko" \
-			"usr/ko/mac80211.ko" \
-			"usr/ko/ghash-generic.ko" \
-			"usr/ko/libsha256.ko" \
-			"usr/ko/gcm.ko" \
+			"usr/ko/cfg80211.ko"
+			"usr/ko/gf128mul.ko"
+			"usr/ko/ctr.ko"
+			"usr/ko/libaes.ko"
+			"usr/ko/sha256_generic.ko"
+			"usr/ko/aes_generic.ko"
+			"usr/ko/ccm.ko"
+			"usr/ko/libarc4.ko"
+			"usr/ko/cmac.ko"
+			"usr/ko/mac80211.ko"
+			"usr/ko/ghash-generic.ko"
+			"usr/ko/libsha256.ko"
+			"usr/ko/gcm.ko"
 			# vendor_storage ko
-			"usr/ko/rk_vendor_storage.ko" \
-			"usr/ko/mtd_vendor_storage.ko" \
+			"usr/ko/rk_vendor_storage.ko"
+			"usr/ko/mtd_vendor_storage.ko"
 			# rve.ko
-			"usr/ko/rve.ko" \
+			"usr/ko/rve.ko"
 			# nor flash
-			"usr/ko/mtd_blkdevs.ko" \
-			"usr/ko/mtdblock.ko" \
-			"usr/ko/spi-nor.ko" \
+			"usr/ko/mtd_blkdevs.ko"
+			"usr/ko/mtdblock.ko"
+			"usr/ko/spi-nor.ko"
 			# unuesd scripts
-			"usr/ko/insmod_ko.sh" \
+			"usr/ko/insmod_ko.sh"
 			# unused data files
-			"usr/lib/*.data" \
-			)
+			"usr/lib/*.data"
+		)
 
-		for i in ${unused_in_oem[@]}
-		do
+		for i in ${unused_in_oem[@]}; do
 			rm -rf $RK_PROJECT_PACKAGE_ROOTFS_DIR/oem/$i
 		done
 	fi
 
-	local unused_in_rootfs=(\
-		"lib/libatomic.so*" \
-		"etc/iqfiles/*" \
-		"etc/services" \
-		"etc/protocols"  \
-		"lib/libstdc++.so.6.0.25-gdb.py" \
-		"lib/libitm.so*" \
-		"usr/share/udhcpc" \
-		"usr/bin/flash*" \
-		"usr/bin/dnsmasq" \
-		"usr/bin/hostapd" \
-		"usr/bin/iperf" \
-		"usr/bin/wifi_start.sh" \
-		"mnt/sdcard" \
-		)
+	local unused_in_rootfs=(
+		"lib/libatomic.so*"
+		"etc/iqfiles/*"
+		"etc/services"
+		"etc/protocols"
+		"lib/libstdc++.so.6.0.25-gdb.py"
+		"lib/libitm.so*"
+		"usr/share/udhcpc"
+		"usr/bin/flash*"
+		"usr/bin/dnsmasq"
+		"usr/bin/hostapd"
+		"usr/bin/iperf"
+		"usr/bin/wifi_start.sh"
+		"mnt/sdcard"
+	)
 
 	# if HI3861L wifi chip, remove wpa_cli, wpa_supplicant, wpa_supplicant.conf, wpa_supplicant_nl80211
-	if [ "$RK_ENABLE_WIFI_CHIP" = "HI3861L" ];then
+	if [ "$RK_ENABLE_WIFI_CHIP" = "HI3861L" ]; then
 		local unused_in_rootfs=("${unused_in_rootfs[@]}" "usr/bin/wpa_*" "etc/wpa_*")
 	fi
 
-	for i in ${unused_in_rootfs[@]}
-	do
+	for i in ${unused_in_rootfs[@]}; do
 		rm -rf $RK_PROJECT_PACKAGE_ROOTFS_DIR/$i
 	done
 }
 
-function copy_data()
-{
+function copy_data() {
 	# for writable, package them to userdata parition
 	mkdir -p $RK_PROJECT_PACKAGE_USERDATA_DIR
 	cp -r $RK_PROJECT_PATH_APP/userdata/* $RK_PROJECT_PACKAGE_USERDATA_DIR
 }
 
-function change_mode()
-{
+function change_mode() {
 	# uvc related files
 	chmod a+x $RK_PROJECT_PACKAGE_ROOTFS_DIR/usr/bin/usb_config.sh
 }
 
-function rewrite_script()
-{
-# export default rk_log_level for app
-echo "export rt_log_level=4" >> $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/profile.d/RkEnv.sh
+function rewrite_script() {
+	# export default rk_log_level for app
+	echo "export rt_log_level=4" >>$RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/profile.d/RkEnv.sh
 
-# remove unused scripts
-rm $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/S21appinit*
-rm $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/S20urandom*
+	# remove unused scripts
+	rm $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/S21appinit*
+	rm $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/S20urandom*
 
-# rewite rcS
-cat > $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcS <<EOF
+	# rewite rcS
+	cat >$RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcS <<EOF
 #!/bin/sh
 echo 256 > /proc/sys/kernel/threads-max
 
@@ -138,12 +132,12 @@ test ! -f libcomposite.ko || insmod libcomposite.ko
 test ! -f usb_f_uvc.ko || insmod usb_f_uvc.ko
 usb_config.sh &
 
-test ! -f /oem/usr/ko/insmod_wifi.sh || /oem/usr/ko/insmod_wifi.sh ${RK_ENABLE_FASTBOOT} ${RK_ENABLE_WIFI_CHIP}
+#test ! -f /oem/usr/ko/insmod_wifi.sh || /oem/usr/ko/insmod_wifi.sh ${RK_ENABLE_FASTBOOT} ${RK_ENABLE_WIFI_CHIP}
 EOF
-chmod +x $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcS
+	chmod +x $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcS
 
-# rewite rcK
-cat > $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcK <<EOF
+	# rewite rcK
+	cat >$RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcK <<EOF
 #!/bin/sh
 echo "Start to killall task!!!"
 
@@ -162,7 +156,7 @@ killall fastboot_server
 killall rkwifi_server
 umount /data
 EOF
-chmod +x $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcK
+	chmod +x $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc/init.d/rcK
 
 }
 

@@ -11,7 +11,7 @@ export RK_CHIP=rv1106
 export RK_APP_TYPE=RKIPC_RV1106
 
 # Config CMA size in environment
-export RK_BOOTARGS_CMA_SIZE="66M"
+export RK_BOOTARGS_CMA_SIZE="1M"
 
 # Kernel dts
 export RK_KERNEL_DTS=rv1106g-luckfox-pico-ultra-w.dts
@@ -58,7 +58,7 @@ export RK_PARTITION_FS_TYPE_CFG=rootfs@IGNORE@ext4,userdata@/userdata@ext4,oem@/
 #	TARGET_ROOTFS
 #################################################
 
-# Target rootfs : ubuntu(only emmc)/buildroot/busybox
+# Target rootfs : ubuntu(only emmc)/buildroot/busybox/custom
 export LF_TARGET_ROOTFS=buildroot
 
 # Buildroot defconfig
