@@ -512,12 +512,6 @@
 };
 
 &pinctrl {
-	sdiso_pwrseq {
-		wifi_enable:wifi-enable {
-			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
 	spi0 {
 		spi0m0_clk: spi0m0-clk {
 			rockchip,pins = <1 RK_PC1 4 &pcfg_pull_none>;

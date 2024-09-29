@@ -21,7 +21,7 @@ function luckfox_tools_check() {
 		exit
 	fi
 
-    	# get media class dev
+	# get media class dev
 	if [[ -e /dev/mmcblk0p4 ]]; then
 		LUCKFOX_CHIP_MEDIA_CLASS="emmc"
 		LUCKFOX_CHIP_MEDIA=/dev/mmcblk0p4
@@ -129,57 +129,58 @@ function luckfox_fdt_overlay() {
 
 # Load the device tree dynamically
 function luckfox_load_dynamic_dts() {
-    local dtbo_node_name
+	local dtbo_node_name
 
-    if [ ! -d ${LF_CUSTOM_DTS_PATH}/dtbo/ ] ;then
-        echo "Can't find ${LF_CUSTOM_DTS_PATH}/dtbo dir !"
-    fi
+	if [ ! -d ${LF_CUSTOM_DTS_PATH}/dtbo/ ]; then
+		exit 1
+		#echo "Can't find ${LF_CUSTOM_DTS_PATH}/dtbo dir !"
+	fi
 
-    for dts_file in ${LF_CUSTOM_DTS_PATH}/dtbo/*.dts ; do
-        #Get DTBO name
-        dtbo_node_name="$(basename "$dts_file" .dts)"
-        #Check DTBO path
-        if [ -d "${SYS_OVERLAYS_PATH}/${dtbo_node_name}" ];then
-            echo "Node is exist"
-            continue
-        fi
+	for dts_file in ${LF_CUSTOM_DTS_PATH}/dtbo/*.dts; do
+		#Get DTBO name
+		dtbo_node_name="$(basename "$dts_file" .dts)"
+		#Check DTBO path
+		if [ -d "${SYS_OVERLAYS_PATH}/${dtbo_node_name}" ]; then
+			echo "Node is exist"
+			continue
+		fi
 
-        #DTS->DTBO
-        dtc -I dts -O dtb ${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dts -o \
-		${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo
-    
+		#DTS->DTBO
+		dtc -I dts -O dtb ${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dts -o \
+			${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo
+
 		if [ ! -f "${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo" ]; then
-			echo "${dtbo_node_name}.dts to dtbo error!"	
+			echo "${dtbo_node_name}.dts to dtbo error!"
 			continue
 		else
-		    mkdir -p ${SYS_OVERLAYS_PATH}/${dtbo_node_name}
-		fi	
-        #Load and enable DTBO
-        cat ${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo > \
-		${SYS_OVERLAYS_PATH}/${dtbo_node_name}/dtbo 
-		echo 1 > ${SYS_OVERLAYS_PATH}/${dtbo_node_name}/status
-			
+			mkdir -p ${SYS_OVERLAYS_PATH}/${dtbo_node_name}
+		fi
+		#Load and enable DTBO
+		cat ${LF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo > \
+			${SYS_OVERLAYS_PATH}/${dtbo_node_name}/dtbo
+		echo 1 >${SYS_OVERLAYS_PATH}/${dtbo_node_name}/status
+
 		rm ${LLF_CUSTOM_DTS_PATH}/dtbo/${dtbo_node_name}.dtbo
-    done
+	done
 }
 
 #Overwrite the disk device tree (requires restart)
 function luckfox_load_static_dts() {
-    local dtbo_node_name
-    if [ ! -d ${LF_CUSTOM_DTS_PATH}/fdt_overlay/ ] ;then
-        echo "Can't find ${LF_CUSTOM_DTS_PATH}/fdt_overlay dir!"
-    fi
+	local dtbo_node_name
+	if [ ! -d ${LF_CUSTOM_DTS_PATH}/fdt_overlay/ ]; then
+		echo "Can't find ${LF_CUSTOM_DTS_PATH}/fdt_overlay dir!"
+	fi
 
-    for dts_file in ${LF_CUSTOM_DTS_PATH}/fdt_overlay/*.dts ; do
-        #Get DTBO name
-        dtbo_node_name="$(basename "$dts_file" .dts)"
-       
-        #DTS->DTBO
-        dtc -I dts -O dtb ${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dts -o \
-		${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dtbo
+	for dts_file in ${LF_CUSTOM_DTS_PATH}/fdt_overlay/*.dts; do
+		#Get DTBO name
+		dtbo_node_name="$(basename "$dts_file" .dts)"
+
+		#DTS->DTBO
+		dtc -I dts -O dtb ${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dts -o \
+			${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dtbo
 
 		if [ ! -f "${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dtbo" ]; then
-			echo "${dtbo_node_name}.dts to dtbo error!"	
+			echo "${dtbo_node_name}.dts to dtbo error!"
 			continue
 		fi
 
@@ -188,7 +189,7 @@ function luckfox_load_static_dts() {
 		luckfox_fdt_overlay ${LF_CUSTOM_DTS_PATH}/fdt_overlay/${dtbo_node_name}.dtbo
 		rm ${LUCKFOX_FDT_OVERLAY_DTBO}
 
-    done
+	done
 }
 
 case $1 in
@@ -203,4 +204,3 @@ stop)
 	exit 1
 	;;
 esac
-

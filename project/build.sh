@@ -537,9 +537,15 @@ function build_check_power_domain() {
 
 function build_tool() {
 	test -d ${SDK_SYSDRV_DIR} && make pctools -C ${SDK_SYSDRV_DIR}
-	cp -fa $PROJECT_TOP_DIR/scripts/mk-fitimage.sh $RK_PROJECT_PATH_PC_TOOLS
-	cp -fa $PROJECT_TOP_DIR/scripts/compress_tool $RK_PROJECT_PATH_PC_TOOLS
-	cp -fa $PROJECT_TOP_DIR/scripts/mk-tftp_sd_update.sh $RK_PROJECT_PATH_PC_TOOLS
+	if [ $LF_ENABLE_SPI_NAND_FAST_BOOT = "y" ]; then
+		cp -fa $PROJECT_TOP_DIR/sfc_scripts/mk-fitimage.sh $RK_PROJECT_PATH_PC_TOOLS
+		cp -fa $PROJECT_TOP_DIR/sfc_scripts/compress_tool $RK_PROJECT_PATH_PC_TOOLS
+		cp -fa $PROJECT_TOP_DIR/sfc_scripts/mk-tftp_sd_update.sh $RK_PROJECT_PATH_PC_TOOLS
+	else
+		cp -fa $PROJECT_TOP_DIR/scripts/mk-fitimage.sh $RK_PROJECT_PATH_PC_TOOLS
+		cp -fa $PROJECT_TOP_DIR/scripts/compress_tool $RK_PROJECT_PATH_PC_TOOLS
+		cp -fa $PROJECT_TOP_DIR/scripts/mk-tftp_sd_update.sh $RK_PROJECT_PATH_PC_TOOLS
+	fi
 	finish_build
 }
 
@@ -724,7 +730,7 @@ function build_env() {
 	local env_cfg_img
 	env_cfg_img=$RK_PROJECT_OUTPUT_IMAGE/env.img
 
-	if [ ! -f $RK_PROJECT_PATH_PC_TOOLS/mkenvimage ]; then
+	if [ ! -f $RK_PROJECT_PATH_PC_TOOLS/mkenvimage ] || [ $LF_ENABLE_SPI_NAND_FAST_BOOT = "y" ]; then
 		build_tool
 	fi
 
@@ -872,7 +878,8 @@ function build_mcu() {
 			echo "Not support at this time"
 		fi
 
-		tar -xvf xpack-riscv-none-embed-gcc-10.2.0-1.2-linux-x64.tar.gz -C $SDK_SYSDRV_DIR/source/mcu/prebuilts/gcc/linux-x86/riscv64
+		tar -xvf $SDK_SYSDRV_DIR/source/mcu/prebuilts/gcc/linux-x86/riscv64/xpack-riscv-none-embed-gcc-10.2.0-1.2-linux-x64.tar.gz \
+			-C $SDK_SYSDRV_DIR/source/mcu/prebuilts/gcc/linux-x86/riscv64
 	fi
 
 	local build_opt
@@ -1265,7 +1272,7 @@ function build_clean() {
 		cd ${SDK_ROOT_DIR}
 		make uboot_clean -C ${SDK_SYSDRV_DIR}
 		if [ -f ${SDK_SYSDRV_DIR}/source/.uboot_patch ]; then
-			git apply -R ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
+			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/uboot/*.patch
 			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/arch/arm/dts/*luckfox*
 			rm -rf ${SDK_SYSDRV_DIR}/source/uboot/u-boot/configs/*luckfox*
 			rm ${SDK_SYSDRV_DIR}/source/.uboot_patch
@@ -1273,7 +1280,7 @@ function build_clean() {
 
 		make kernel_clean -C ${SDK_SYSDRV_DIR}
 		if [ -f ${SDK_SYSDRV_DIR}/source/.kernel_patch ]; then
-			git apply -R ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
+			git apply -R --verbose ${SDK_SYSDRV_DIR}/tools/board/kernel/*.patch
 			cp ${SDK_SYSDRV_DIR}/tools/board/kernel/logo_linux_clut224.ppm ${SDK_SYSDRV_DIR}/source/kernel/drivers/video/logo/logo_linux_clut224.ppm
 			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/configs/*luckfox*
 			rm -rf ${SDK_SYSDRV_DIR}/source/kernel/arch/arm/boot/dts/*luckfox*
@@ -2495,7 +2502,10 @@ function build_firmware() {
 	check_config RK_PARTITION_CMD_IN_ENV || return 0
 
 	build_env
-	build_meta
+
+	if [ "$RK_ENABLE_FASTBOOT" = "y" ]; then
+		build_meta
+	fi
 
 	mkdir -p ${RK_PROJECT_OUTPUT_IMAGE}
 
@@ -2539,7 +2549,9 @@ function build_firmware() {
 
 	# package a empty userdata parition image
 	mkdir -p $RK_PROJECT_PACKAGE_USERDATA_DIR
-	__PACKAGE_USERDATA
+	if [ "$RK_ENABLE_FASTBOOT" != "y" ]; then
+		__PACKAGE_USERDATA
+	fi
 	build_mkimg userdata $RK_PROJECT_PACKAGE_USERDATA_DIR
 
 	build_tftp_sd_update
@@ -2550,9 +2562,15 @@ function build_firmware() {
 	# Spi_nand mklink
 	if [ "${RK_BOOT_MEDIUM}" == "spi_nand" ]; then
 		msg_info "MEDIUM SPI_NAND relink Image"
-		files=("${RK_PROJECT_OUTPUT_IMAGE}/oem.img"
-			"${RK_PROJECT_OUTPUT_IMAGE}/rootfs.img"
-			"${RK_PROJECT_OUTPUT_IMAGE}/userdata.img")
+
+		if [ "${RK_ENABLE_FASTBOOT}" = "y" ]; then
+			files="${RK_PROJECT_OUTPUT_IMAGE}/userdata.img"
+		else
+			files=("${RK_PROJECT_OUTPUT_IMAGE}/oem.img"
+				"${RK_PROJECT_OUTPUT_IMAGE}/rootfs.img"
+				"${RK_PROJECT_OUTPUT_IMAGE}/userdata.img")
+		fi
+
 		for file in "${files[@]}"; do
 			if [ -e "$file" ]; then
 				filename=$(basename "$file")

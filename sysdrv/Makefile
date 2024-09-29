@@ -640,7 +640,7 @@ ifeq ($(SYSDRV_BUILD_RAMDISK_FLAG),YES)
 	endif
 else
 	tar xf $(BUILDROOT_DIR)/$(BUILDROOT_VER)/output/images/rootfs.tar -C $(SYSDRV_DIR_OUT_ROOTFS)
-	cp $(SYSDRV_DIR)/tools/board/buildroot/busybox $(SYSDRV_DIR_OUT_ROOTFS)/bin/busybox
+	#cp $(SYSDRV_DIR)/tools/board/buildroot/busybox $(SYSDRV_DIR_OUT_ROOTFS)/bin/busybox
 	cp $(SYSDRV_DIR)/tools/board/buildroot/shadow_defconfig $(SYSDRV_DIR_OUT_ROOTFS)/etc/shadow
 	cp $(SYSDRV_DIR)/tools/board/buildroot/sshd_defconfig $(SYSDRV_DIR_OUT_ROOTFS)/etc/ssh/sshd_config
 	cp $(SYSDRV_DIR)/tools/board/buildroot/samba_defconfig $(SYSDRV_DIR_OUT_ROOTFS)/etc/samba/smb.conf
@@ -688,7 +688,7 @@ ifeq ($(ENABLE_EMMC),YES)
 	cp $(SYSDRV_DIR)/tools/board/emmc/emmc_filesystem_resize.sh $(SYSDRV_DIR_OUT_ROOTFS)/usr/bin/filesystem_resize.sh
 	cp $(SYSDRV_DIR)/tools/board/emmc/emmc_rc.local $(SYSDRV_DIR_OUT_ROOTFS)/etc/rc.local
 	cp $(SYSDRV_DIR)/tools/board/emmc/emmc_wifi_bt_init.sh $(SYSDRV_DIR_OUT_ROOTFS)/usr/bin/wifi_bt_init.sh
-	cp $(SYSDRV_DIR)/tools/board/emmc/emmc_wifi_ko $(SYSDRV_DIR_OUT_ROOTFS)/usr/ko -r
+	#cp $(SYSDRV_DIR)/tools/board/emmc/emmc_wifi_ko $(SYSDRV_DIR_OUT_ROOTFS)/usr/ko -r
 	cp $(SYSDRV_DIR)/tools/board/emmc/udhcp/usr/bin/udhcpc $(SYSDRV_DIR_OUT_ROOTFS)/usr/bin/udhcpc
 	cp $(SYSDRV_DIR)/tools/board/emmc/udhcp/usr/bin/udhcpd $(SYSDRV_DIR_OUT_ROOTFS)/usr/bin/udhcpd
 	mkdir -p $(SYSDRV_DIR_OUT_ROOTFS)/usr/share/udhcpc

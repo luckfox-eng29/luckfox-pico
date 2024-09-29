@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# remove unused files
 function copy_data() {
 	# for writable, package them to userdata parition
 	mkdir -p $RK_PROJECT_PACKAGE_USERDATA_DIR
-	cp -r $RK_PROJECT_PATH_APP/userdata/* $RK_PROJECT_PACKAGE_USERDATA_DIR
+	#cp -r $RK_PROJECT_PATH_APP/userdata/* $RK_PROJECT_PACKAGE_USERDATA_DIR
 }
 
 function change_mode() {
