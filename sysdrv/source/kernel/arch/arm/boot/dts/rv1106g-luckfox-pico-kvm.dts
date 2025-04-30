@@ -5,7 +5,7 @@
 
 /dts-v1/;
 #include "rv1106.dtsi"
-#include "rv1106-luckfox-pico-ultra-ipc.dtsi"
+#include "rv1106-luckfox-pico-kvm-ipc.dtsi"
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/display/media-bus-format.h>
 
@@ -114,10 +114,15 @@
 	status = "okay";
 };
 
-/**********SPI**********/
-&spi0 {
-	status = "disabled";
-	spidev@0 {
-		spi-max-frequency = <50000000>;
-	};
+/**********LCD**********/
+&i2c2 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2m0_xfer>;	
+};
+
+
+/********Watchdog*******/
+&wdt {
+	status = "okay";
 };
