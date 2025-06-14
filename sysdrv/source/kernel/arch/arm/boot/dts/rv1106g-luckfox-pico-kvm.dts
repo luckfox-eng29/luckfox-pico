@@ -115,12 +115,17 @@
 };
 
 /**********LCD**********/
-&i2c2 {
+//&i2c2 {
+//	status = "okay";
+//	pinctrl-names = "default";
+//	pinctrl-0 = <&i2c2m0_xfer>;	
+//};
+
+&i2c3 {
 	status = "okay";
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c2m0_xfer>;	
+	pinctrl-0 = <&i2c3m1_xfer>;	
 };
-
 
 /********Watchdog*******/
 &wdt {

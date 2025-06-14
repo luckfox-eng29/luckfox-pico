@@ -140,6 +140,16 @@
 			linux,default-trigger = "activity";
 			default-state = "on";
 		};
+		network_led_y:network_led_y {
+			label = "net:activity";
+			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "netdev";
+		};
+		network_led_g:network_led_g {
+			label = "net:activity";
+			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "netdev";
+		};
 	};
 
 	hdmi_osc: hdmi-osc {
@@ -241,13 +251,13 @@
 	status = "okay";
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
-	pinctrl-0 = <&i2c4m2_xfer>;
+	pinctrl-0 = <&i2c4m2_xfer &tp_rst &tp_irq>;
 
 	tc358743: tc358743@f {
 		compatible = "toshiba,tc358743";
 		reg = <0x0f>;
-		//clocks = <&cru MCLK_REF_MIPI0>;
-		clocks = <&hdmi_osc>;
+		clocks = <&cru MCLK_REF_MIPI0>;
+		//clocks = <&hdmi_osc>;
 		clock-names = "refclk";
 		reset-gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
 		//reset-gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_HIGH>;
@@ -270,6 +280,16 @@
 		};
 	};
 
+    CST816:touchscreen@15 {
+		compatible = "hynitron,cst816s";
+      	reg = <0x15>;
+
+    	interrupt-parent = <&gpio3>;
+    	interrupts = <RK_PD1 IRQ_TYPE_EDGE_FALLING>;
+
+    	reset-gpios = <&gpio3 RK_PD2 GPIO_ACTIVE_LOW>;
+    	pinctrl-names = "default";
+    };
 };
 
 &mipi0_csi2 {
@@ -390,8 +410,8 @@
 		fps = <30>;
 		buswidth = <8>;
 		debug = <0x7>;
-		led-gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_HIGH>;//BL
-		dc-gpios = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>;      //DC
+		led-gpios = <&gpio1 RK_PC5 GPIO_ACTIVE_HIGH>;//BL
+		dc-gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;      //DC
 		reset-gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;    //RES
 	};
 };
@@ -409,6 +429,16 @@
 		};
 		spi0m0_cs0: spi0m0-cs0 {
 			rockchip,pins = <1 RK_PC0 4 &pcfg_pull_none>;
+		};
+	};
+		
+	touchscreen {
+		tp_rst:tp-rst {
+			rockchip,pins = <3 RK_PD2 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		tp_irq:tp-irq {
+			rockchip,pins = <3 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };

@@ -337,6 +337,12 @@ config TOUCHSCREEN_HAMPSHIRE
 	  To compile this driver as a module, choose M here: the
 	  module will be called hampshire.
 
+config TOUCHSCREEN_HYNITRON_CST816X
+	tristate "Hynitron CST816X touchscreen support"
+	depends on I2C
+	help
+	  Say Y if you have a Hynitron CST816X touchscreen. 
+
 config TOUCHSCREEN_EETI
 	tristate "EETI touchscreen panel support"
 	depends on I2C

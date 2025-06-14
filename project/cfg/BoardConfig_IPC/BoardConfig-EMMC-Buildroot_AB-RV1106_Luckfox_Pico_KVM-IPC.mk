@@ -35,7 +35,7 @@ export RK_UBOOT_DEFCONFIG_FRAGMENT=rk-emmc.config
 #       <partdef> := <size>[@<offset>](part-name)
 # Note:
 #   If the first partition offset is not 0x0, it must be added. Otherwise, it needn't adding.
-export RK_PARTITION_CMD_IN_ENV="32K(env),512K@32K(idblock),256K(uboot),32M(boot),512M(oem),4G(userdata),2G(rootfs)"
+export RK_PARTITION_CMD_IN_ENV="32K(env),512K@32K(idblock),256K(uboot_a),256K(uboot_b),256K(misc),32M(boot_a),32M(boot_b),640M(system_a),640M(system_b),5G(userdata)"
 
 # config partition's filesystem type (squashfs is readonly)
 # emmc:    squashfs/ext4
@@ -46,7 +46,7 @@ export RK_PARTITION_CMD_IN_ENV="32K(env),512K@32K(idblock),256K(uboot),32M(boot)
 #         AAAA ----------> partition name
 #         /BBBB/CCCC ----> partition mount point
 #         ext4 ----------> partition filesystem type
-export RK_PARTITION_FS_TYPE_CFG=rootfs@IGNORE@ext4,userdata@/userdata@ext4,oem@/oem@ext4
+export RK_PARTITION_FS_TYPE_CFG=system_a@IGNORE@ext4,userdata@/userdata@ext4
 
 # config filesystem compress (Just for squashfs or ubifs)
 # squashfs: lz4/lzo/lzma/xz/gzip, default xz
@@ -78,8 +78,7 @@ export RK_TOOLCHAIN_CROSS=arm-rockchip830-linux-uclibcgnueabihf
 export RK_MISC=wipe_all-misc.img
 
 # Uboot defconfig
-#export RK_UBOOT_DEFCONFIG=luckfox_kvm_rv1106_uboot_defconfig
-export RK_UBOOT_DEFCONFIG=luckfox_rv1106_uboot_defconfig
+export RK_UBOOT_DEFCONFIG=luckfox_kvm_rv1106_uboot_defconfig
 
 # Kernel defconfig
 export RK_KERNEL_DEFCONFIG=luckfox_rv1106_linux_defconfig
@@ -129,6 +128,6 @@ export RK_POST_OVERLAY="overlay-luckfox-config overlay-luckfox-buildroot-init ov
 #  OTA
 #################################################
 # Enable OTA tool
-#export RK_ENABLE_OTA=y
+export RK_ENABLE_OTA=y
 # OTA package
-#export RK_OTA_RESOURCE="uboot.img boot.img system.img"
+export RK_OTA_RESOURCE="uboot.img boot.img system.img"
