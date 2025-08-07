@@ -66,6 +66,7 @@ add_executable(${PROJECT_NAME} ${SRCS})
 target_link_libraries(${PROJECT_NAME} pthread rockit rockchip_mpp rkaiq rtsp rkaudio_detect aec_bf_process wpa_client m rkmuxer freetype rockiva iconv rknnmrt rga stdc++ rksysutils rkaudio)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+install(FILES rkipc-mia1321-100w.ini DESTINATION share)
 install(FILES rkipc-300w.ini DESTINATION share)
 install(FILES rkipc-400w.ini DESTINATION share)
 install(FILES rkipc-500w.ini DESTINATION share)

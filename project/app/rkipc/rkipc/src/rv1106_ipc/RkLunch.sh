@@ -73,6 +73,10 @@ post_chk() {
 	default_rkipc_ini=/tmp/rkipc-factory-config.ini
 
 	if [ ! -f "/oem/usr/share/rkipc.ini" ]; then
+		lsmod | grep mia1321
+		if [ $? -eq 0 ]; then
+			ln -s -f /oem/usr/share/rkipc-mia1321-100w.ini $default_rkipc_ini
+		fi
 		lsmod | grep mis5001
 		if [ $? -eq 0 ]; then
 			ln -s -f /oem/usr/share/rkipc-mis5001-500w.ini $default_rkipc_ini
@@ -124,6 +128,24 @@ post_chk() {
 
 	if [ -f "/oem/usr/share/speaker_test.wav" ]; then
 		rk_mpi_ao_test -i /oem/usr/share/speaker_test.wav --sound_card_name=hw:0,0 --device_ch=2 --device_rate=8000 --input_rate=8000 --input_ch=2 --set_volume 50
+	fi
+
+	csi_unite=$(( $(luckfox-config get_csi_unite) ))
+	if [ -z csi_unite ]; then
+		csi_unite=0
+	fi
+	if lsmod | grep 'imx415' | awk '{print $3}' | grep -w 1; then
+		if [ $csi_unite == "0" ]; then
+			luckfox-config set_csi_unite 1
+			echo "[rkipc] Set rockchip,unite to 1; rkipc requires a reboot to function properly."
+			return
+		fi
+	else
+		if [ $csi_unite == "1" ]; then
+			luckfox-config set_csi_unite 0
+			echo "[rkipc] Set rockchip,unite to 0; rkipc requires a reboot to function properly."
+			return
+		fi
 	fi
 
 	if [ -d "/oem/usr/share/iqfiles" ]; then
