@@ -696,6 +696,13 @@ int rk_network_get_cable_state() {
 			ifinfo = NLMSG_DATA(nh);
 
 			if_indextoname(ifinfo->ifi_index, name);
+			if (strcmp(name, "usb0") == 0) {
+				continue;
+			}
+			if (strcmp(name, "wlan0") == 0) {
+				continue;
+			}
+
 			LOG_INFO("\n[%s] link %s\n", name, (ifinfo->ifi_flags & IFF_LOWER_UP) ? "up" : "down");
 
 			memset(cmd1, 0, 32);
